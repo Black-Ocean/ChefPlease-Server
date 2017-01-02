@@ -1,0 +1,24 @@
+{
+  "name": "blackoceanserver",
+  "version": "1.0.0",
+  "description": "Backend for Black-Ocean thesis project",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm start",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aarboleda1/server.git"
+  },
+  "author": "Anton Arboleda, Suhail Idrees, Adam Jung, Zack Winchell",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aarboleda1/server/issues"
+  },
+  "homepage": "https://github.com/aarboleda1/server#readme",
+  "dependencies": {
+    "express": "^4.10.2",
+    "socket.io": "^1.7.2"
+  }
+}
