@@ -1,19 +1,18 @@
-const app = require('express')();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const express = require('express');
+const app = express();
 
-app.get('/', function(req, res){
-  console.log('hello')
-});
+const path = require('path');
+const bodyParser = require('body-parser');
 
-io.on('connection', function(socket){
-  console.log('a user connected');
-});
+app.use(bodyParser.urlencoded({'extended': 'true'}));
+app.use(bodyParser.json());
 
-// setInterval(() => {
-//   io.emit('ping', { data: (new Date())/1});
-// }, 1000);
 
-http.listen(3000, function(){
-  console.log('listening on *:3000');
+
+
+
+app.use(express.static(path.join(__dirname, '../public')));
+
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!');
 });
