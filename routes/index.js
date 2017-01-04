@@ -1,7 +1,6 @@
 var fs = require('fs');
 
 module.exports = function(app){
-  console.log('hello world');
   // read all directories in the current folder
   fs.readdirSync(__dirname).forEach(function(folderName) {
     if (folderName === "index.js") { 
@@ -14,7 +13,7 @@ module.exports = function(app){
           var name = file.substr(0, file.indexOf('.'));
           // ignore directories, only bring in route files
           if (name) {
-            require('./' + name)(app);  
+            require('./' + folderName + '/' + name)(app);  
           }
         });
       }
