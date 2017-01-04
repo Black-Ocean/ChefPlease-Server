@@ -101,7 +101,7 @@ DROP TABLE IF EXISTS `chefs_locations`;
     
 CREATE TABLE `chefs_locations` (
   `id` INTEGER AUTO_INCREMENT,
-  `id_users` INTEGER NULL DEFAULT NULL,
+  `id_chefID` INTEGER NULL DEFAULT NULL,
   `id_locations` INTEGER NULL DEFAULT NULL,
   `createdAt` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -144,10 +144,11 @@ DROP TABLE IF EXISTS `chefs`;
     
 CREATE TABLE `chefs` (
   `id` INTEGER AUTO_INCREMENT,
-  `avgRating` FLOAT NULL DEFAULT NULL,
+  `name` VARCHAR(32) NULL DEFAULT NULL,
   `bio` VARCHAR(256) NULL DEFAULT NULL,
   `image` VARCHAR(64) NULL DEFAULT NULL,
-  `id_users` INTEGER NULL DEFAULT NULL,
+  `avgRating` FLOAT NULL DEFAULT NULL,
+  `id_userID` INTEGER NULL DEFAULT NULL,
   `createdAt` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
@@ -156,17 +157,17 @@ CREATE TABLE `chefs` (
 -- Foreign Keys 
 -- ---
 
-ALTER TABLE `users` ADD FOREIGN KEY (chefID) REFERENCES `chefs` (`id`);
+ALTER TABLE `users` ADD FOREIGN KEY (chefID) REFERENCES `chefs` (`id`) ON DELETE CASCADE;
 ALTER TABLE `reviews` ADD FOREIGN KEY (id_chefID) REFERENCES `chefs` (`id`);
 ALTER TABLE `reviews` ADD FOREIGN KEY (id_userID) REFERENCES `users` (`id`);
 ALTER TABLE `dishes` ADD FOREIGN KEY (id_chefID) REFERENCES `chefs` (`id`);
 ALTER TABLE `users_events` ADD FOREIGN KEY (id_users) REFERENCES `users` (`id`);
 ALTER TABLE `users_events` ADD FOREIGN KEY (id_events) REFERENCES `events` (`id`);
-ALTER TABLE `chefs_locations` ADD FOREIGN KEY (id_users) REFERENCES `users` (`id`);
+ALTER TABLE `chefs_locations` ADD FOREIGN KEY (id_chefID) REFERENCES `chefs` (`id`);
 ALTER TABLE `chefs_locations` ADD FOREIGN KEY (id_locations) REFERENCES `locations` (`id`);
 ALTER TABLE `chefs_events` ADD FOREIGN KEY (id_chefID) REFERENCES `chefs` (`id`);
 ALTER TABLE `chefs_events` ADD FOREIGN KEY (id_events) REFERENCES `events` (`id`);
-ALTER TABLE `chefs` ADD FOREIGN KEY (id_users) REFERENCES `users` (`id`);
+ALTER TABLE `chefs` ADD FOREIGN KEY (id_userID) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 -- ---
 -- Table Properties
