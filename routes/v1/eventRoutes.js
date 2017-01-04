@@ -3,13 +3,6 @@ var eventHelpers = require('./helpers/eventHelpers');
 var url = require('url')
 
 module.exports = function(app) {
-  // Main middleware
-  app.use(function(err, req, res, next) {
-    // Do logging and user-friendly error message display
-    console.error(err);
-    res.status(500).send({status:500, message: 'internal error', type:'internal'});
-  });
-
   // route for events 
   app.route('/events')
     //get all events 
@@ -36,6 +29,7 @@ module.exports = function(app) {
           console.log(err)
           res.sendStatus(404)
         }
+        // 201 status code for POST request to let user know data was placed in DB
         res.sendStatus(201);        
       })
 
