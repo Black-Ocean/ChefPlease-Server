@@ -9,6 +9,7 @@
 -- Table 'users'
 -- 
 -- ---
+DROP DATABASE IF EXISTS `black_ocean`;
 CREATE DATABASE IF NOT EXISTS black_ocean;
 
 USE black_ocean;
@@ -133,6 +134,21 @@ CREATE TABLE `chefs_events` (
   `id` INTEGER AUTO_INCREMENT,
   `id_chefID` INTEGER NULL DEFAULT NULL,
   `id_events` INTEGER NULL DEFAULT NULL,
+  `createdAt` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+-- ---
+-- Table 'tokens'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `tokens`;
+    
+CREATE TABLE `tokens` (
+  `id` INTEGER AUTO_INCREMENT,
+  `token` VARCHAR(256) NULL DEFAULT NULL,
+  `id_userID` INTEGER NULL DEFAULT NULL,
   `createdAt` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
