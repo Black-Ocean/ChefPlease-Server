@@ -2,13 +2,19 @@ const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
 
+
 const path = require('path');
 const bodyParser = require('body-parser');
-const expressSession = require('express-session');
+const session = require('express-session');
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
+app.use(session({
+  secret: 'secret for generating sessions',
+  resave: false,
+  saveUninitialized: true,
+}))
 
 app.use(express.static(path.join(__dirname, '../../node_modules')));
 
