@@ -1,9 +1,14 @@
 //Utility functions for Authentication
-var Promise = require('bluebird');
-var bcrypt = require('bcrypt-nodejs');
-var connection = require('../../../db/index')
+const Promise = require('bluebird');
+const bcrypt = require('bcrypt-nodejs');
+const connection = require('../../../db/index');
+const jwt = require('jsonwebtoken');
+const _ = require('lodash'); 
+const config = require('./config');
 
-var isLoggedIn = function (req) {
+
+
+const isLoggedIn = (req) => {
   // if the session is true, log them in or log them out otherwise return false  
   return req.session ? !! req.session.user : false;
 };
@@ -11,6 +16,11 @@ var isLoggedIn = function (req) {
 const getHash = (hash) => {
   return hash;
 }
+const createToken = (user) => {
+  //user needs to be an object 
+  user = {name: 'anton', password:'password'};
+  return jwt.sign(_.omit(user, 'password'), config.secret, { expiresIn: 60*60*5 });
+};
 
 exports.checkUser = function (req, res, next) {
   if (!isLoggedIn(req)) {
@@ -48,13 +58,13 @@ exports.hashPassword = function(password) {
 
 exports.signUp = function (req, res) {
   // check if user exists
+  console.log(createToken(), 'createToken')
   let {name, bio, image, email, password} = req.body;
-  // find a user first
+
   connection.query('SELECT * from users WHERE email=?', email, 
     function (err, results) {
-      console.log(JSON.stringify(results));
       if (results.length) {
-        res.send('user already exists!')       
+        res.status(400).send("A user with that email already exists!");
       } else {
         //create new user
         console.log('inside else statement')
