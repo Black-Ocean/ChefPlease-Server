@@ -4,9 +4,8 @@
   "description": "Backend for Black-Ocean thesis project",
   "main": "server.js",
   "scripts": {
-    "test": "npm start",
-    "start": "nodemon server.js",
-    "test": "node server.js & mocha --bail --reporter nyan routes/v1/test/authSpec.js; pkill -n node;"
+    "test": "node server.js & mocha --bail --reporter nyan routes/v1/test/authSpec.js;",
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -37,5 +36,8 @@
     "request": "^2.79.0",
     "socket.io": "^1.7.2",
     "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "supertest": "^2.0.1"
   }
 }
