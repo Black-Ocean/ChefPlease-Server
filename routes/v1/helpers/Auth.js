@@ -13,6 +13,7 @@ exports.isLoggedIn = function (req, res, next) {
   connection.query(query, [AuthToken], function (err, results) {
     // if the user in the database is found, 
     if (results.length < 1) {
+      // if the user is not logged in, redirect the client to login page
       console.log('USER TOKEN NOT GOOD !!!!');
       res.redirect('/login');
     } else {
@@ -21,20 +22,21 @@ exports.isLoggedIn = function (req, res, next) {
   });
 };
 
+//middleware for users FIGURE OUT WHERE THIS GOES
+exports.isOwnProfile = function () {
+  
+};
+
+// WHERE WOULD THIS GO??
+exports.isAChef = function (req, res, next) {
+  return req.headers.isAChef ? true : false;
+};
+
 //creates a web token given in an object with a username
 const createToken = (user) => {
   return jwt.sign(_.omit(user, 'password'), config.secret, { expiresIn: 60*60*5 });
 };
 
-exports.checkUser = function (req, res, next) {
-
-  if (!isLoggedIn(req)) {
-    res.redirect('/login');    
-  } else {
-    console.log('AUTHENTICATION IS WORKING')
-    next();
-  }
-};
 
 //Creates a session, sends user to home page and sends them back a token
 const createSession = function (req, res, newUser) {
@@ -112,6 +114,7 @@ exports.logOut = function (req,res) {
   let AuthToken = req.headers.authtoken;
   let query = 'DELETE FROM tokens WHERE tokens.token=?'
   connection.query(query, [AuthToken], function (err, result) {
+    // res.redirect('/login');
     res.status(200).send('User Token has been deleted')
   });
 };

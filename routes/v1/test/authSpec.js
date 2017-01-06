@@ -144,38 +144,23 @@ var xbeforeEach = function() {};
   // }); // 'Account Creation'
 
 
-  describe ('Account Login:', function() {
+  // describe ('Account Login:', function() {
+  //   it('Logs in existing users by sending back a token responding to that session', function(done) {
+  //     var options = {
+  //       'method': 'POST',
+  //       'uri': 'http://127.0.0.1:3000/login',
+  //       'json': {
+  //         'email': 'Phillip',
+  //         'password': 'Phillip'
+  //       }
+  //     };
 
-  //   var requestWithSession = request.defaults({jar: true});
-
-    // beforeEach(function(done) {
-    //   let req = {
-    //     name: 'Phillip', 
-    //     bio: 'Phillip', 
-    //     image: 'Phillip', 
-    //     email: 'Phillip', 
-    //     password: 'Phillip'
-    //   };
-    //   util.signUp(req)
-    //   done()
-    // });
-
-    it('Logs in existing users by sending back some token', function(done) {
-      var options = {
-        'method': 'POST',
-        'uri': 'http://127.0.0.1:3000/login',
-        'json': {
-          'email': 'Phillip',
-          'password': 'Phillip'
-        }
-      };
-
-      request(options, function(error, res, body) {
-        console.log(res.body.AuthToken, 'RES BODY')
-        expect(res.body.AuthToken.length).to.exist;
-        done();
-      });
-    });
+  //     request(options, function(error, res, body) {
+  //       console.log(res.body.AuthToken, 'RES BODY')
+  //       expect(res.body.AuthToken.length).to.exist;
+  //       done();
+  //     });
+  //   });
 
   //   it('Users that do not exist are kept on login page', function(done) {
   //     var options = {
@@ -186,24 +171,29 @@ var xbeforeEach = function() {};
   //         'password': 'Fred'
   //       }
   //     };
-
-  //     requestWithSession(options, function(error, res, body) {
+  //     request(options, function(error, res, body) {
   //       expect(res.headers.location).to.equal('/login');
   //       done();
   //     });
   //   });
 
-  }); // 'Account Login'
+  // }); // 'Account Login'
 
-  // describe ('Account Logout:' function () {
-  //   it ('Logs out users and destroys the token in database', function () {
-  //     var requestWithSession = request.defaults({jar: true});
+  describe ('Account Logout:' function () {
+    it ('Logs out users and destroys the token in database', function () {
+      var options = {
+        'method': 'GET',
+        'uri': 'http://127.0.0.1:3000/logout',
+        'json': {
+          'email': 'Phillip',
+          'password': 'Phillip'
+        }
+      };
+      request(options, function(error, res, body) {
+       expect(res.headers.location).to.equal('/login');
+       done();
+      });
 
-  //     requestWithSession(options, function(error, res, body) {
-  //      expect(res.headers.location).to.equal('/login');
-  //        done();
-  //     });
-
-  //   }); 
-  // }); 
-// });
+    }); 
+  }); 
+});
