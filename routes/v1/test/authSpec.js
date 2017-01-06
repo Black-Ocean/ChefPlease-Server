@@ -1,5 +1,7 @@
 var expect = require('chai').expect;
+var should = require('chai').should;
 var request = require('request');
+var util = require('../helpers/Auth')
 
 const connection = require('../../../db/index');
 
@@ -86,97 +88,94 @@ var xbeforeEach = function() {};
   // }); // 'Priviledged Access'
 
 
-  describe ('Account Creation:', function() {
+  // describe ('Account Creation:', function() {
 
-    it('Signup creates a user record', function(done) {
-      var options = {
-        'method': 'POST',
-        'uri': 'http://127.0.0.1:4568/signup',
-        'json': {
-          'email': 'Svnh',
-          'password': 'Svnh'
-        }
-      };
+  //   it('Signup creates a user record and sends back a token', function(done) {
+  //     var options = {
+  //       'method': 'POST',
+  //       'uri': 'http://127.0.0.1:3000/signup',
+  //       'json': {
+  //         'email': 'new@new',
+  //         'password': 'vnhbblahblahbiggbug'
+  //       }
+  //     };
 
-      request(options, function(error, res, body) {
-        let {email, password} = options.json;
-        let query = ''
-        // db.knex('users')
-        //   .where('email', '=', 'Svnh')
-        //   .then(function(res) {
-        //     if (res[0] && res[0]['email']) {
-        //       var user = res[0]['email'];
-        //     }
-        //     expect(user).to.equal('Svnh');
-        //     done();
-        //   }).catch(function(err) {
-        //     throw {
-        //       type: 'DatabaseError',
-        //       message: 'Failed to create test setup data'
-        //     };
-        //   });
+  //     request(options, function(error, res, body) {
 
-        //FINISH QUERY IN SPEC
-        connection.query(newUser, [email, password],
-          function (err, results) {
-
-            res.end(JSON.stringify({ data: results }));              
-          }
-        )
-
-        console.log(connection)
-        console.log(options.json);
-        done();
-      });
-    });
-
-    // it('Signup logs in a new user', function(done) {
-    //   var options = {
-    //     'method': 'POST',
-    //     'uri': 'http://127.0.0.1:4568/signup',
-    //     'json': {
-    //       'email': 'Phillip',
-    //       'password': 'Phillip'
-    //     }
-    //   };
-
-    //   request(options, function(error, res, body) {
-    //     expect(res.headers.location).to.equal('/');
-    //     done();
-    //   });
-    // });
-
-  }); // 'Account Creation'
-
-
-  // describe ('Account Login:', function() {
-
-  //   var requestWithSession = request.defaults({jar: true});
-
-  //   beforeEach(function(done) {
-  //     new User({
-  //       'email': 'Phillip',
-  //       'password': 'Phillip'
-  //     }).save().then(function() {
+  //       expect(res.body.AuthToken.length).to.be.a('number')
   //       done();
   //     });
   //   });
 
-  //   it('Logs in existing users', function(done) {
+  //   it('Should not sign up a user if that user already exists', function(done) {
   //     var options = {
   //       'method': 'POST',
-  //       'uri': 'http://127.0.0.1:4568/login',
+  //       'uri': 'http://127.0.0.1:3000/signup',
   //       'json': {
-  //         'email': 'Phillip',
-  //         'password': 'Phillip'
+  //         'email': 'anton',
+  //         'password': 'anton'
   //       }
   //     };
 
-  //     requestWithSession(options, function(error, res, body) {
+  //     request(options, function(error, res, body) {
+
+  //       expect(res.body).to.equal('A user with that email already exists!')
+  //       done();
+  //     });
+  //   });
+
+  //   it('Signup logs in a new user', function(done) {
+  //     var options = {
+  //       'method': 'POST',
+  //       'uri': 'http://127.0.0.1:4568/signup',
+  //       'json': {
+  //         'email': 'aPhillipbuhbuh',
+  //         'password': 'aPhillipbuhbuh'
+  //       }
+  //     };
+
+  //     request(options, function(error, res, body) {
+  //       console.log(res.headers.location, 'RESHEADERS LOCATION');
   //       expect(res.headers.location).to.equal('/');
   //       done();
   //     });
   //   });
+
+  // }); // 'Account Creation'
+
+
+  describe ('Account Login:', function() {
+
+  //   var requestWithSession = request.defaults({jar: true});
+
+    // beforeEach(function(done) {
+    //   let req = {
+    //     name: 'Phillip', 
+    //     bio: 'Phillip', 
+    //     image: 'Phillip', 
+    //     email: 'Phillip', 
+    //     password: 'Phillip'
+    //   };
+    //   util.signUp(req)
+    //   done()
+    // });
+
+    it('Logs in existing users by sending back some token', function(done) {
+      var options = {
+        'method': 'POST',
+        'uri': 'http://127.0.0.1:3000/login',
+        'json': {
+          'email': 'Phillip',
+          'password': 'Phillip'
+        }
+      };
+
+      request(options, function(error, res, body) {
+        console.log(res.body.AuthToken, 'RES BODY')
+        expect(res.body.AuthToken.length).to.exist;
+        done();
+      });
+    });
 
   //   it('Users that do not exist are kept on login page', function(done) {
   //     var options = {
@@ -194,17 +193,17 @@ var xbeforeEach = function() {};
   //     });
   //   });
 
-  // }); // 'Account Login'
+  }); // 'Account Login'
 
-  describe ('Account Logout:' function () {
-    it ('Logs out users and destroys the token in database', function () {
-      var requestWithSession = request.defaults({jar: true});
+  // describe ('Account Logout:' function () {
+  //   it ('Logs out users and destroys the token in database', function () {
+  //     var requestWithSession = request.defaults({jar: true});
 
-      requestWithSession(options, function(error, res, body) {
-       expect(res.headers.location).to.equal('/login');
-         done();
-      });
+  //     requestWithSession(options, function(error, res, body) {
+  //      expect(res.headers.location).to.equal('/login');
+  //        done();
+  //     });
 
-    }); 
-  }); 
+  //   }); 
+  // }); 
 // });
