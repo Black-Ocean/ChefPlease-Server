@@ -5,16 +5,17 @@ const cookieParser = require('cookie-parser');
 
 const path = require('path');
 const bodyParser = require('body-parser');
-const session = require('express-session');
+
+const util = require('./routes/v1/helpers/Auth');
 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(cookieParser());
-app.use(session({
-  secret: 'secret',
-  resave: false,
-  saveUninitialized: true,
-}))
+app.use('/users', function (req, res, next) {
+  util.isLoggedIn(req, res);
+  next();
+});
+
 
 app.use(express.static(path.join(__dirname, '../../node_modules')));
 

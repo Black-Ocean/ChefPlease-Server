@@ -1,4 +1,4 @@
-//Utility functions for Authentication
+// Auth Service with Token Based Authentication
 const Promise = require('bluebird');
 const bcrypt = require('bcrypt-nodejs');
 const connection = require('../../../db/index');
@@ -6,59 +6,57 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash'); 
 const config = require('./config');
 
-
-
-const isLoggedIn = (req) => {
-  // if the session is true, log them in or log them out otherwise return false  
-  return req.session ? !! req.session.user : false;
+// Middleware to protect view in the app
+exports.isLoggedIn = function (req, res, next) {
+  let AuthToken = req.headers.authtoken;
+  let query = 'Select * FROM tokens WHERE tokens.token=?'
+  connection.query(query, [AuthToken], function (err, results) {
+    // if the user in the database is found, 
+    if (results.length < 1) {
+      console.log('USER TOKEN NOT GOOD !!!!');
+      res.redirect('/login');
+    } else {
+      next();
+    };
+  });
 };
 
-const getHash = (hash) => {
-  return hash;
-}
+//creates a web token given in an object with a username
 const createToken = (user) => {
-  //user needs to be an object 
-  user = {name: 'anton', password:'password'};
   return jwt.sign(_.omit(user, 'password'), config.secret, { expiresIn: 60*60*5 });
 };
 
 exports.checkUser = function (req, res, next) {
+
   if (!isLoggedIn(req)) {
     res.redirect('/login');    
   } else {
+    console.log('AUTHENTICATION IS WORKING')
     next();
   }
 };
 
-exports.createSession = function (req, res, newUser) {
-  // should also generate a web token to send back to the client to persist being logged in
-  return req.session.regenerate(function () {
-    //check what the user will be
-    req.session.user = newUser;
-    res.redirect('/');
-  });
+//Creates a session, sends user to home page and sends them back a token
+const createSession = function (req, res, newUser) {
+  let token = createToken(newUser);
+  req.session = {
+    AuthToken: token
+  };
+  console.log(newUser, 'NEW USER TRYING TO CREATE SESSION');
+  connection.query(
+    'INSERT INTO tokens (token, id_userID) VALUES (?, (SELECT users.id FROM users WHERE users.email=?))',
+    [token, newUser.email],
+    function (err, results) {
+      if (err) {console.log(err)}
+      console.log(results);
+    }
+  );
+  res.status(201).send(req.session);
 };
 
-exports.comparePassword = function (attemptedPassword, callback) {
-  //FIX ME
-  bcrypt.compare(attemptedPassword, this.get('password'), function(err, isMatch) {
-    callback(isMatch);
-  });
-};
 
-exports.hashPassword = function(password) {
-  var cipher = Promise.promisify(bcrypt.hash);
-  return cipher(password, null, null).bind(this)
-    .then(function(hash) {
-      console.log(hash, 'hashed PW')
-      getHash(hash);
-      return hash
-    });
-}
 
 exports.signUp = function (req, res) {
-  // check if user exists
-  console.log(createToken(), 'createToken')
   let {name, bio, image, email, password} = req.body;
 
   connection.query('SELECT * from users WHERE email=?', email, 
@@ -67,15 +65,20 @@ exports.signUp = function (req, res) {
         res.status(400).send("A user with that email already exists!");
       } else {
         //create new user
-        console.log('inside else statement')
+        console.log(JSON.parse(JSON.stringify(results)))
+        let user = JSON.parse(JSON.stringify(results))[0];
         bcrypt.hash(password, null, null, function(err, hashedPassword) {
         let newUser = 'INSERT INTO users (name, bio, image, email, password) VALUES (?, ?, ?, ?, ?)';
           // Store hash in your password DB.
+          console.log([name, bio, image, email, hashedPassword])
           connection.query(newUser, [name, bio, image, email, hashedPassword],
             function (err, results) {
-              // res.json(results);
-              res.end(JSON.stringify({ data: results }));
-              
+              if (err) {
+                console.log(err);
+              } else {
+                let newUser = {email: email, password: hashedPassword}
+                createSession(req, res, newUser);
+              }
             }
           )
         });      
@@ -84,31 +87,39 @@ exports.signUp = function (req, res) {
 }
 
 exports.login = function (req, res) {
- let {email, password} = req.body;
+  let {email, password} = req.body;
 
-  connection.query('SELECT password from users WHERE email=?', email, 
+  connection.query('SELECT * from users WHERE email=?', email, 
     function (err, results) {
       let hash = JSON.parse(JSON.stringify(results))[0].password;
+      let id = JSON.parse(JSON.stringify(results))[0].id;
+      let user = JSON.parse(JSON.stringify(results))[0];
+      console.log(user, 'USER OBJECT');
+
       let attemptedPassword = password;
       bcrypt.compare(attemptedPassword, hash, function (err, isMatch) {
         if (isMatch) {
-          req.session.regenerate(function (err) {
-            console.log('SESSION GENERATED')
-            //assign user and redirect them to the home page
-            req.session.user = 'Anton'
-            // have cookie signed??????
-            //look in express docs for middleware for signed cookies
-            res.cookie('rememberme', '1', { expires: new Date(Date.now() + 900000), httpOnly: true});
-            res.send('Successful Login!!!');
-
-          });
+          // if a password matches, create a session for that user
+          createSession(req, res, user);
         } else {
-          res.sendStatus(400);
+          res.status(401).send('The username or password to not match!!');
         }
       });
     }
   );
 }
+
+exports.logOut = function (req,res) {
+  let AuthToken = req.headers.authtoken;
+  let query = 'DELETE FROM tokens WHERE tokens.token=?'
+  connection.query(query, [AuthToken], function (err, result) {
+    res.status(200).send('User Token has been deleted')
+  });
+};
+
+
+
+
 
 
 
