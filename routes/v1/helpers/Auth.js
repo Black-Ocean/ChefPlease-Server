@@ -64,6 +64,7 @@ exports.signUp = function (req, res) {
 
   connection.query('SELECT * from users WHERE email=?', email, 
     function (err, results) {
+      console.log(results, 'RESULTS');
       if (results.length) {
         res.status(400).send("A user with that email already exists!");
       } else {
