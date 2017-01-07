@@ -266,7 +266,7 @@ ALTER TABLE `chefs_events` ADD FOREIGN KEY (id_events) REFERENCES `events` (`id`
 -- ALTER TABLE `chefs` ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- ---
--- Test Data
+-- INITIAL Data
 -- ---
 
 -- INSERT INTO `users` (`id`,`chefID`,`name`,`bio`,`avgRating`,`image`,`createdAt`) VALUES
@@ -281,8 +281,12 @@ ALTER TABLE `chefs_events` ADD FOREIGN KEY (id_events) REFERENCES `events` (`id`
 -- ('','','','');
 -- INSERT INTO `chefs_locations` (`id`,`id_users`,`id_locations`,`createdAt`) VALUES
 -- ('','','','');
--- INSERT INTO `locations` (`id`,`city`) VALUES
--- ('','');
+INSERT INTO `locations` (`city`) VALUES
+('San Francisco'), ('Los Angeles'), ('New York City'), ('Chicago');
+INSERT INTO `cuisines` (`cuisine`) VALUES
+('French'), ('Italian'), ('American'), ('Mexican'), ('Chinese'), ('Japanese'), ('Korean');
+INSERT INTO `restrictions` (`restriction`) VALUES
+('Eggs'), ('Dairy'), ('Peanuts'), ('Tree Nuts'), ('Seafood'), ('Shellfish'), ('Wheat'), ('Soy'), ('Gluten');
 -- INSERT INTO `chefs_events` (`id`,`id_chefID`,`id_events`,`createdAt`) VALUES
 -- ('','','','');
 -- INSERT INTO `chefs` (`id`,`avgRating`,`bio`,`image`,`id_users`,`createdAt`) VALUES

@@ -1,5 +1,6 @@
 var url = require('url');
 const connection = require('../../db/index.js');
+const helpers = require('./helpers/userChefHelpers.js');
 
 module.exports = function(app) {
   app.get('/users', function(req, res, next) {
@@ -8,8 +9,7 @@ module.exports = function(app) {
       if (err) {
           res.sendStatus(500);
       }
-      // TODO: filter results down and send to client
-      res.end(JSON.stringify({ data: results }));
+      res.send(JSON.stringify({ data: results }));
     });
   });
 
@@ -21,7 +21,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500);
         }
-        res.end(JSON.stringify({ data: results.insertId }));
+        res.send(JSON.stringify({ data: results.insertId }));
       }
     );
   });
@@ -35,7 +35,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(404);
         }
-        res.end(JSON.stringify({ data: results }));
+        res.send(JSON.stringify({ data: results }));
       }
     )
   });
@@ -47,18 +47,19 @@ module.exports = function(app) {
       if (err) {
           res.sendStatus(404);
       }
-      res.end(JSON.stringify({ data: results }));
+      res.send(JSON.stringify({ data: results }));
     })
   });
 
   app.get('/chefs', function(req, res, next) {
+    let qTerms = req.params;
     let qString = 'SELECT * FROM chefs';
     connection.query(qString, function(err, results) {
       if (err) {
           res.sendStatus(500);
       }
       // TODO: filter results down and send to client
-      res.end(results);
+      res.send(results);
     });
   });
 
@@ -78,8 +79,28 @@ module.exports = function(app) {
           if (err) {
             res.sendStatus(404);
           }
+          var chefLocations = helpers.formatSearch(chef.locations);
+          var chefCuisines = helpers.formatSearch(chef.cuisines);
+          var chefRestrictions = helpers.formatSearch(chef.restrictions);
+          // add chefs locations
+          connection.query('INSERT INTO chefs_locations (id_chefID, id_locationID) \
+                            SELECT ?, id FROM locations \
+                            WHERE city IN (' + chefLocations +')',
+                            [chefID]);
+          // add chefs cuisines
+          connection.query('INSERT INTO chefs_cuisines (id_chefID, id_cuisineID) \
+                            SELECT ?, id FROM cuisines \
+                            WHERE cuisine IN (' + chefCuisines +')',
+                            [chefID]);
+
+          // add chefs restrictions
+          connection.query('INSERT INTO chefs_restrictions (id_chefID, id_restrictionID) \
+                            SELECT ?, id FROM restrictions \
+                            WHERE restriction IN (' + chefRestrictions +')',
+                            [chefID]);
+
           // return id in chefs table for the new chef
-          res.end(JSON.stringify({ data: chefID }));
+          res.send(JSON.stringify({ data: chefID }));
         });
       }
     );
@@ -94,7 +115,7 @@ module.exports = function(app) {
         if (err) {
             res.sendStatus(404);
         }
-        res.end(JSON.stringify({ data: results }));
+        res.send(JSON.stringify({ data: results }));
       }
     );
   });
@@ -107,7 +128,7 @@ module.exports = function(app) {
       if (err) {
         res.sendStatus(404);
       }
-      res.end(JSON.stringify({ data: results }));
+      res.send(JSON.stringify({ data: results }));
     });
   });
 }
