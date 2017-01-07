@@ -105,8 +105,10 @@ exports.login = function (req, res) {
           // if a password matches, create a session for that user
           createSession(req, res, user);
         } else {
-          //Invalid password for username
-          res.status(401).send('Unauthorized the username and password do not match');
+          //Invalid password for username          
+          res.status(401).json({
+            result: 'Password does not match email'
+          });
         }
       });
         
