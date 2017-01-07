@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "node server.js & mocha --bail --reporter nyan routes/v1/test/authSpec.js;",
-    "start": "nodemon server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
