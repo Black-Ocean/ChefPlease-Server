@@ -1,22 +1,18 @@
-var connection = require('../../db/index')
-var eventHelpers = require('./helpers/eventHelpers');
-var url = require('url')
+var url = require('url');
+var connection = require('../../db/index');
 
 module.exports = function(app) {
-  // route for events 
   app.route('/events')
-    //get all events 
+    //get all events (dev purposes, client will not need this)
     .get(function(req, res, next) {
-      var query = 'SELECT * FROM events'
+      var query = 'SELECT * FROM events';
       connection.query(query, function (err, results) {
         if (err) {
-          res.sendStatus(404)
-          console.log(err, 'ERORR')
+          res.sendStatus(404).end();
         } 
         res.json(results);
       });
     })
-    //create new event ant respond with JSON of new event
     .post(function(req, res, next) {
       var eventDetails = {
         name: req.body.name,
@@ -24,1832 +20,187 @@ module.exports = function(app) {
         location: req.body.location,
         text: req.body.text,
       }
-      connection.query('INSERT INTO events SET ?', eventDetails, function (err, next) {
-        if (err) {
-          console.log(err)
-          res.sendStatus(404)
+      connection.query('INSERT INTO events SET ?', eventDetails, 
+        function (err, next) {
+          if (err) {
+            res.sendStatus(404).end();
+          }
+          res.sendStatus(201);        
         }
-        // 201 status code for POST request to let user know data was placed in DB
-        res.sendStatus(201);        
-      })
-
-
+      );
     });
 
-  //update event with matching id and respond w/ JSON of updated event
-    app.put('/events/:id', function (req, res, next) {
+  app.route('events/:id')
+    .put(function (req, res, next) {
       let {name, time, location, text} = req.body;
       let eventId = parseInt(req.params.id);
-      connection.query('UPDATE events SET name = ?, time = ?, location = ?, text = ?  WHERE id = ?', [name, time, location, text, eventId], function(err, results) {
-        if (err) {
-          res.sendStatus(500).end()
+      let qString = 'UPDATE events \
+                      SET name = ?, time = ?, location = ?, text = ? \
+                    WHERE id = ?';
+      connection.query(qString, [name, time, location, text, eventId],
+        function(err, results) {
+          if (err) {
+            res.sendStatus(500).end();
+          }
+          res.send(results);
         }
-        res.send(results);
-      })
-
+      );
+    })
+    .delete(function (req, res, next) {
+      let eventId = parseInt(req.params.id);
+      let qString = 'DELETE FROM users_events WHERE id_events = ?';
+      connection.query(qString, [eventId], function(err) {
+        if (err) {
+          res.sendStatus(500).end();
+        } 
+        let query = 'DELETE FROM chefs_events WHERE id_events = ?';
+        connection.query(query, [eventId], function(err) {
+          if (err) {
+            res.sendStatus(500).end();
+          }
+          let query = 'DELETE FROM events WHERE id = ?';
+          connection.query(query, [eventId], function(err) {
+            if (err) {
+              res.sendStatus(500).end();
+            }
+            res.sendStatus(202);
+          });
+        });
+      });
     });
 
-  // Delete an event given it's id. 
-  app.delete('/events/:id', function (req, res, next) {
-    let {name, time, location, text} = req.body;
-    let eventId = parseInt(req.params.id);
-    var query = `DELETE from events WHERE id = ${eventId}`
-    connection.query(query, function(err) {
-      if (err) {
-        res.sendStatus(500).end()
-      } else {
-
-        // Send back status code: resource was successfully deleted
-        res.sendStatus(202);
-      }
+  app.route('events/:id/users')
+    // get all users for an event
+    .get(function(req, res, next) {
+      let eventId = req.params.id;
+      let qString = 'SELECT * FROM users AS user \
+                      INNER JOIN users_events AS ue \
+                      ON (user.id = ue.id_users) \
+                     WHERE ue.id_events = ?';
+      connection.query(qString, [eventId], function(err, results) {
+        if (err) {
+          res.sendStatus(500).end();
+        }
+        res.send(JSON.stringify({ data: results }));
+      })
     })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  });
+    .delete(function(req, res, next) {
+      let eventId = req.params.id;
+      let qString = 'DELETE FROM users_events WHERE id_events = ?';
+      connection.query(qString, [eventId], function(err, results) {
+        if (err) {
+          res.sendStatus(500).end();
+        }
+        res.sendStatus(202);
+      });
+    });
+
+  app.route('events/:id/chefs')
+    .get(function(req, res, next) {
+      let eventId = req.params.id;
+      let qString = 'SELECT * FROM chefs AS chef \
+                      INNER JOIN chefs_events AS ce \
+                      ON (chef.id = ce.id_chefs) \
+                     WHERE ce.id_events = ?';
+      connection.query(qString, [eventId], function(err, results) {
+        if (err) {
+          res.sendStatus(500).end();
+        }
+        res.send(JSON.stringify({ data: results }));
+      });
+    })
+    .delete(function(req, res, next) {
+      let eventId = req.params.id;
+      let qString = 'DELETE FROM chefs_events WHERE id_events = ?';
+      connection.query(qString, [eventId], function(err, results) {
+        if (err) {
+          res.sendStatus(500).end();
+        }
+        res.sendStatus(202);
+      });
+    });
+
+  app.route('/events/users/:id')
+    // get all events for a user
+    .get(function(req, res, next) {
+      let userId = req.params.id;
+      let qString = 'SELECT * FROM events AS e \
+                      INNER JOIN users_events AS ue \
+                      ON (e.id = ue.events) \
+                    WHERE ue.id_users = ?';
+      connection.query(qString, [userId], function(err, results) {
+        if (err) {
+          res.sendStatus(500).end();
+        }
+        res.send(JSON.stringify({ data: results }));
+      });
+    })
+    // add a user to an event
+    .post(function(req, res, next) {
+      let userId = req.params.id;
+      let eventId = req.body.eventId;
+      let qString = 'INSERT INTO users_events (id_users, id_events) \
+                     VALUES (?, ?)';
+      connection.query(qString, [userId, eventId], function(err, results) {
+        if (err) {
+          res.sendStatus(500).end();
+        }
+        res.send(JSON.stringify({ data: results.insertId }));
+      });
+    })
+    // remove a user from an event
+    .delete(function(req, res, next) {
+      let userId = req.params.id;
+      let eventId = req.body.eventId;
+      let qString = 'DELETE FROM users_events \
+                     WHERE id_users = ? AND id_events = ?';
+      connection.query(qString, [userId, eventId], function(err, results) {
+        if (err) {
+          res.sendStatus(500).end();
+        }
+        res.sendStatus(202);
+      })
+    });
+
+  app.route('/events/chefs/:id')
+    // get all events for a chef
+    .get(function(req, res, next) {
+      let userId = req.params.id;
+      let qString = 'SELECT * FROM events AS e \
+                      INNER JOIN chefs_events AS ce \
+                      ON (e.id = ue.events) \
+                    WHERE ce.id_chefs = ?';
+      connection.query(qString, [userId], function(err, results) {
+        if (err) {
+          res.sendStatus(500).end();
+        }
+        res.send(JSON.stringify({ data: results }));
+      });
+    })
+    // add a chef to an event
+    .post(function(req, res, next) {
+      let userId = req.params.id;
+      let eventId = req.body.eventId;
+      let qString = 'INSERT INTO chefs_events (id_users, id_events) \
+                     VALUES (?, ?)';
+      connection.query(qString, [userId, eventId], function(err, results) {
+        if (err) {
+          res.sendStatus(500).end();
+        }
+        res.send(JSON.stringify({ data: results.insertId }));
+      });
+    })
+    // remove a chef from an event
+    .delete(function(req, res, next) {
+      let userId = req.params.id;
+      let eventId = req.body.eventId;
+      let qString = 'DELETE FROM chefs_events \
+                     WHERE id_chefs = ? AND id_events = ?';
+      connection.query(qString, [userId, eventId], function(err, results) {
+        if (err) {
+          res.sendStatus(500).end();
+        }
+        res.sendStatus(202);
+      })
+    });
 }
-
-  // app.get('/api/:version', function(req, res) {
-  //   res.send(req.params.version);
-  // });
-
-// var post  = {id: 1, title: 'Hello MySQL'};
-// var query = connection.query('INSERT INTO posts SET ?', post, function(err, result) {
-//   // Neat!
-// });
-// console.log(query.sql); // INSERT INTO posts SET `id` = 1, `title` = 'Hello MySQL'
-
-
-
