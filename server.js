@@ -1,11 +1,21 @@
 const express = require('express');
 const app = express();
+const cookieParser = require('cookie-parser');
+
 
 const path = require('path');
 const bodyParser = require('body-parser');
 
-app.use(bodyParser.urlencoded({'extended': 'true'}));
-app.use(bodyParser.json());
+const util = require('./routes/v1/helpers/Auth');
+
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(cookieParser());
+app.use('/users', function (req, res, next) {
+  util.isLoggedIn(req, res);
+  next();
+});
+
 
 app.use(express.static(path.join(__dirname, '../../node_modules')));
 

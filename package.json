@@ -4,7 +4,7 @@
   "description": "Backend for Black-Ocean thesis project",
   "main": "server.js",
   "scripts": {
-    "test": "npm start",
+    "test": "node server.js & mocha --bail --reporter nyan routes/v1/test/authSpec.js;",
     "start": "nodemon server.js"
   },
   "repository": {
@@ -18,13 +18,26 @@
   },
   "homepage": "https://github.com/aarboleda1/server#readme",
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "bluebird": "^3.4.7",
     "body-parser": "^1.15.2",
     "bookshelf": "^0.10.2",
+    "chai": "^3.5.0",
+    "cookie-parser": "^1.4.3",
     "express": "^4.10.2",
+    "express-session": "^1.14.2",
+    "jsonwebtoken": "^7.2.1",
     "knex": "^0.12.6",
+    "lodash": "^4.17.4",
+    "mocha": "^3.2.0",
+    "morgan": "^1.7.0",
     "mysql": "^2.12.0",
     "path": "^0.12.7",
+    "request": "^2.79.0",
     "socket.io": "^1.7.2",
     "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "supertest": "^2.0.1"
   }
 }

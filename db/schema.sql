@@ -9,6 +9,7 @@
 -- Table 'users'
 -- 
 -- ---
+DROP DATABASE IF EXISTS `black_ocean`;
 CREATE DATABASE IF NOT EXISTS black_ocean;
 
 USE black_ocean;
@@ -18,10 +19,12 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` INTEGER AUTO_INCREMENT,
   `chefID` INTEGER NULL DEFAULT NULL,
-  `name` VARCHAR(32) NULL DEFAULT NULL,
+  `name` VARCHAR(64) NULL DEFAULT NULL,
   `bio` VARCHAR(256) NULL DEFAULT NULL,
   `avgRating` FLOAT NULL DEFAULT NULL,
   `image` VARCHAR(64) NULL DEFAULT NULL,
+  `email` VARCHAR(64) NULL DEFAULT NULL,
+  `password` VARCHAR(256) NULL DEFAULT NULL,
   `createdAt` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
@@ -68,11 +71,26 @@ DROP TABLE IF EXISTS `dishes`;
     
 CREATE TABLE `dishes` (
   `id` INTEGER AUTO_INCREMENT,
-  `id_chefID` INTEGER NULL DEFAULT NULL,
+  `name` VARCHAR(32) NULL DEFAULT NULL,
+  `text` VARCHAR(256) NULL DEFAULT NULL,
   `image` VARCHAR(64) NULL DEFAULT NULL,
   `price` FLOAT NULL DEFAULT NULL,
   `restrictions` VARCHAR(32) NULL DEFAULT NULL,
-  `cuisine` VARCHAR(32) NULL DEFAULT NULL,
+  `cuisines` VARCHAR(32) NULL DEFAULT NULL,
+  `id_chefID` INTEGER NULL DEFAULT NULL,
+  `createdAt` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+-- ---
+-- Table 'tokens'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `tokens` (
+  `id` INTEGER AUTO_INCREMENT,
+  `token` VARCHAR(1000) NULL DEFAULT NULL,
+  `id_userID` INTEGER NULL DEFAULT NULL,
   `createdAt` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
@@ -93,6 +111,21 @@ CREATE TABLE `users_events` (
 );
 
 -- ---
+-- Table 'chefs_events'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `chefs_events`;
+    
+CREATE TABLE `chefs_events` (
+  `id` INTEGER AUTO_INCREMENT,
+  `id_chefID` INTEGER NULL DEFAULT NULL,
+  `id_events` INTEGER NULL DEFAULT NULL,
+  `createdAt` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+-- ---
 -- Table 'chefs_locations'
 -- 
 -- ---
@@ -102,7 +135,37 @@ DROP TABLE IF EXISTS `chefs_locations`;
 CREATE TABLE `chefs_locations` (
   `id` INTEGER AUTO_INCREMENT,
   `id_chefID` INTEGER NULL DEFAULT NULL,
-  `id_locations` INTEGER NULL DEFAULT NULL,
+  `id_locationID` INTEGER NULL DEFAULT NULL,
+  `createdAt` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+-- ---
+-- Table 'chefs_cuisines'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `chefs_cuisines`;
+    
+CREATE TABLE `chefs_cuisines` (
+  `id` INTEGER AUTO_INCREMENT,
+  `id_chefID` INTEGER NULL DEFAULT NULL,
+  `id_cuisineID` INTEGER NULL DEFAULT NULL,
+  `createdAt` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+);
+
+-- ---
+-- Table 'chefs_restrictions'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `chefs_restrictions`;
+    
+CREATE TABLE `chefs_restrictions` (
+  `id` INTEGER AUTO_INCREMENT,
+  `id_chefID` INTEGER NULL DEFAULT NULL,
+  `id_restrictionID` INTEGER NULL DEFAULT NULL,
   `createdAt` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
@@ -121,17 +184,28 @@ CREATE TABLE `locations` (
 );
 
 -- ---
--- Table 'chefs_events'
+-- Table 'cuisines'
 -- 
 -- ---
 
-DROP TABLE IF EXISTS `chefs_events`;
+DROP TABLE IF EXISTS `cuisines`;
     
-CREATE TABLE `chefs_events` (
+CREATE TABLE `cuisines` (
   `id` INTEGER AUTO_INCREMENT,
-  `id_chefID` INTEGER NULL DEFAULT NULL,
-  `id_events` INTEGER NULL DEFAULT NULL,
-  `createdAt` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `cuisine` VARCHAR(32) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+-- ---
+-- Table 'restrictions'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `restrictions`;
+    
+CREATE TABLE `restrictions` (
+  `id` INTEGER AUTO_INCREMENT,
+  `restriction` VARCHAR(32) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -158,16 +232,22 @@ CREATE TABLE `chefs` (
 -- ---
 
 ALTER TABLE `users` ADD FOREIGN KEY (chefID) REFERENCES `chefs` (`id`) ON DELETE CASCADE;
+ALTER TABLE `chefs` ADD FOREIGN KEY (id_userID) REFERENCES `users` (`id`) ON DELETE CASCADE;
 ALTER TABLE `reviews` ADD FOREIGN KEY (id_chefID) REFERENCES `chefs` (`id`);
 ALTER TABLE `reviews` ADD FOREIGN KEY (id_userID) REFERENCES `users` (`id`);
 ALTER TABLE `dishes` ADD FOREIGN KEY (id_chefID) REFERENCES `chefs` (`id`);
+ALTER TABLE `tokens` ADD FOREIGN KEY (id_userID) REFERENCES `users` (`id`);
+
 ALTER TABLE `users_events` ADD FOREIGN KEY (id_users) REFERENCES `users` (`id`);
 ALTER TABLE `users_events` ADD FOREIGN KEY (id_events) REFERENCES `events` (`id`);
 ALTER TABLE `chefs_locations` ADD FOREIGN KEY (id_chefID) REFERENCES `chefs` (`id`);
-ALTER TABLE `chefs_locations` ADD FOREIGN KEY (id_locations) REFERENCES `locations` (`id`);
+ALTER TABLE `chefs_locations` ADD FOREIGN KEY (id_locationID) REFERENCES `locations` (`id`);
+ALTER TABLE `chefs_cuisines` ADD FOREIGN KEY (id_chefID) REFERENCES `chefs` (`id`);
+ALTER TABLE `chefs_cuisines` ADD FOREIGN KEY (id_cuisineID) REFERENCES `cuisines` (`id`);
+ALTER TABLE `chefs_restrictions` ADD FOREIGN KEY (id_chefID) REFERENCES `chefs` (`id`);
+ALTER TABLE `chefs_restrictions` ADD FOREIGN KEY (id_restrictionID) REFERENCES `restrictions` (`id`);
 ALTER TABLE `chefs_events` ADD FOREIGN KEY (id_chefID) REFERENCES `chefs` (`id`);
 ALTER TABLE `chefs_events` ADD FOREIGN KEY (id_events) REFERENCES `events` (`id`);
-ALTER TABLE `chefs` ADD FOREIGN KEY (id_userID) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 -- ---
 -- Table Properties
