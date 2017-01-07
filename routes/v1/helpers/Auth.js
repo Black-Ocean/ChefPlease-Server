@@ -8,7 +8,7 @@ const config = require('./config');
 
 // Middleware to protect view in the app
 exports.isLoggedIn = function (req, res, next) {
-  let AuthToken = req.headers.authtoken;
+  let AuthToken = req.headers.AuthToken;
   let query = 'Select * FROM tokens WHERE tokens.token=?'
   connection.query(query, [AuthToken], function (err, results) {
     // if the user in the database is found, 
