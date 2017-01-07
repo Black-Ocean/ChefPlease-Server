@@ -1,9 +1,13 @@
 var mysql = require('mysql');
 
 var connection = mysql.createConnection({
-  user     : 'root',
-  password : null,
-  database : 'black_ocean'
+  host: 'us-cdbr-iron-east-04.cleardb.net',
+  user     : 'b3c7dbd82fcf88',
+  password : '8c954b8d',
+  database : 'heroku_c78b041c5ef1bc2',
+  flags: {
+    reconnect: true,
+  }
 });
 
 module.exports = connection;

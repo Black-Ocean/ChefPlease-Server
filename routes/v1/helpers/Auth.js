@@ -64,7 +64,11 @@ exports.signUp = function (req, res) {
 
   connection.query('SELECT * from users WHERE email=?', email, 
     function (err, results) {
+      // results === undefined
+      // []
+      console.log('results is ', results);
       if (results.length) {
+        console.log(results);
         res.status(400).send("A user with that email already exists!");
       } else {
         //create new user
