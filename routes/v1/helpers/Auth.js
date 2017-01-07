@@ -107,7 +107,7 @@ exports.login = function (req, res) {
         } else {
           //Invalid password for username          
           res.status(401).json({
-            result: 'Password does not match username'
+            result: 'Password does not match email'
           });
         }
       });
