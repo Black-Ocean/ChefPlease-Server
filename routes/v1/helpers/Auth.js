@@ -34,6 +34,7 @@ exports.isAChef = function (req, res, next) {
 
 //creates a web token given in an object with a username
 const createToken = (user) => {
+  // Remove the pass word, then create the token that will expire in 1 month
   return jwt.sign(_.omit(user, 'password'), config.secret, { expiresIn: 60*60*5 });
 };
 
@@ -89,23 +90,27 @@ exports.signUp = function (req, res) {
 
 exports.login = function (req, res) {
   let {email, password} = req.body;
-
   connection.query('SELECT * from users WHERE email=?', email, 
     function (err, results) {
+      // Invalid Username
+      if (results.length === 0) {
+        res.status(400).send('Invalid Username');
+      } else {
       let hash = JSON.parse(JSON.stringify(results))[0].password;
       let id = JSON.parse(JSON.stringify(results))[0].id;
       let user = JSON.parse(JSON.stringify(results))[0];
-      console.log(user, 'USER OBJECT');
-
       let attemptedPassword = password;
       bcrypt.compare(attemptedPassword, hash, function (err, isMatch) {
         if (isMatch) {
           // if a password matches, create a session for that user
           createSession(req, res, user);
         } else {
-          res.status(401).send('The username or password to not match!!');
+          //Invalid password for username
+          res.status(401).send('Unauthorized the username and password do not match');
         }
       });
+        
+      }
     }
   );
 }

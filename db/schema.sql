@@ -88,6 +88,7 @@ CREATE TABLE `dishes` (
 -- ---
 
 DROP TABLE IF EXISTS `tokens`;
+
 CREATE TABLE `tokens` (
   `id` INTEGER AUTO_INCREMENT,
   `token` VARCHAR(1000) NULL DEFAULT NULL,
