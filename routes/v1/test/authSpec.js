@@ -144,7 +144,7 @@ var xbeforeEach = function() {};
   // }); // 'Account Creation'
 
 
-  // describe ('Account Login:', function() {
+  describe ('Account Login:', function() {
   //   it('Logs in existing users by sending back a token responding to that session', function(done) {
   //     var options = {
   //       'method': 'POST',
@@ -177,7 +177,22 @@ var xbeforeEach = function() {};
   //     });
   //   });
 
-  // }); // 'Account Login'
+      it ('Sends back a 401 if user tries to login with invalid credentials', function (done) {
+        var options = {
+          'method': 'POST',
+          'uri': 'http://127.0.0.1:3000/login',
+          'json': {
+            'email': 'JohnSmith',
+            'password': 'JohnSmith'
+          }
+        };
+        request(options, function(error, res, body) {
+          expect(res.body).to.equal('Unauthorized the username or password do not match');
+          done();
+        });
+      }) 
+
+  }); // 'Account Login'
 
   describe ('Account Logout:' function () {
     it ('Logs out users and destroys the token in database', function () {
