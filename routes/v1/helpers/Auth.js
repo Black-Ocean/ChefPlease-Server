@@ -22,10 +22,10 @@ exports.isLoggedIn = function (req, res, next) {
   });
 };
 
-//middleware for users FIGURE OUT WHERE THIS GOES
-exports.isOwnProfile = function () {
+// //middleware for users FIGURE OUT WHERE THIS GOES
+// exports.isOwnProfile = function () {
   
-};
+// };
 
 // WHERE WOULD THIS GO??
 exports.isAChef = function (req, res, next) {
