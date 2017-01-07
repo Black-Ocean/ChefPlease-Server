@@ -90,24 +90,23 @@ exports.signUp = function (req, res) {
 
 exports.login = function (req, res) {
   let {email, password} = req.body;
-
   connection.query('SELECT * from users WHERE email=?', email, 
     function (err, results) {
+      // Invalid Username
       if (results.length === 0) {
-        res.status(400).send('Invalid Username or Password');
+        res.status(400).send('Invalid Username');
       } else {
       let hash = JSON.parse(JSON.stringify(results))[0].password;
       let id = JSON.parse(JSON.stringify(results))[0].id;
       let user = JSON.parse(JSON.stringify(results))[0];
-      console.log(user, 'USER OBJECT');
-
       let attemptedPassword = password;
       bcrypt.compare(attemptedPassword, hash, function (err, isMatch) {
         if (isMatch) {
           // if a password matches, create a session for that user
           createSession(req, res, user);
         } else {
-          res.status(401).send('Unauthorized the username or password do not match');
+          //Invalid password for username
+          res.status(401).send('Unauthorized the username and password do not match');
         }
       });
         
