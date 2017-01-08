@@ -8,7 +8,7 @@ const config = require('./config');
 
 // Middleware to protect view in the app
 exports.isLoggedIn = function (req, res, next) {
-  let AuthToken = req.headers.authtoken;
+  let AuthToken = req.headers.AuthToken;
   let query = 'Select * FROM tokens WHERE tokens.token=?'
   connection.query(query, [AuthToken], function (err, results) {
     // if the user in the database is found, 
@@ -43,6 +43,7 @@ const createToken = (user) => {
 const createSession = function (req, res, newUser) {
   let token = createToken(newUser);
   req.session = {
+    id: newUser.id,
     AuthToken: token
   };
   console.log(newUser, 'NEW USER TRYING TO CREATE SESSION');
@@ -65,6 +66,7 @@ exports.signUp = function (req, res) {
   connection.query('SELECT * from users WHERE email=?', email, 
     function (err, results) {
       if (results.length) {
+        console.log(results);
         res.status(400).send("A user with that email already exists!");
       } else {
         //create new user
@@ -72,13 +74,12 @@ exports.signUp = function (req, res) {
         bcrypt.hash(password, null, null, function(err, hashedPassword) {
         let newUser = 'INSERT INTO users (name, bio, image, email, password) VALUES (?, ?, ?, ?, ?)';
           // Store hash in your password DB.
-          console.log([name, bio, image, email, hashedPassword])
           connection.query(newUser, [name, bio, image, email, hashedPassword],
             function (err, results) {
               if (err) {
                 console.log(err);
               } else {
-                let newUser = {email: email, password: hashedPassword}
+                let newUser = {id: results.insertId, email: email, password: hashedPassword};
                 createSession(req, res, newUser);
               }
             }
