@@ -4,7 +4,7 @@
   "description": "Backend for Black-Ocean thesis project",
   "main": "server.js",
   "engines": {
-    "node": "5.9.1"
+    "node": "6.3.1"
   },
   "scripts": {
     "test": "node server.js & mocha --bail --reporter nyan routes/v1/test/authSpec.js;",
