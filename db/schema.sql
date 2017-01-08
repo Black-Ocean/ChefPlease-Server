@@ -14,6 +14,8 @@
 
 -- USE black_ocean;
 
+SET FOREIGN_KEY_CHECKS = 0;
+
 DROP TABLE IF EXISTS `users`;
     
 CREATE TABLE `users` (
@@ -164,6 +166,21 @@ CREATE TABLE `chefs_restrictions` (
 );
 
 -- ---
+-- Table 'events_dishes'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `events_dishes`;
+    
+CREATE TABLE `events_dishes` (
+  `id` INTEGER AUTO_INCREMENT,
+  `id_eventID` INTEGER NULL DEFAULT NULL,
+  `id_dishID` INTEGER NULL DEFAULT NULL,
+  `quantities` INTEGER NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+-- ---
 -- Table 'locations'
 -- 
 -- ---
@@ -232,6 +249,8 @@ ALTER TABLE `tokens` ADD FOREIGN KEY (id_userID) REFERENCES `users` (`id`);
 
 ALTER TABLE `users_events` ADD FOREIGN KEY (id_users) REFERENCES `users` (`id`);
 ALTER TABLE `users_events` ADD FOREIGN KEY (id_events) REFERENCES `events` (`id`);
+ALTER TABLE `events_dishes` ADD FOREIGN KEY (id_dishID) REFERENCES `dishes` (`id`);
+ALTER TABLE `events_dishes` ADD FOREIGN KEY (id_eventID) REFERENCES `events` (`id`);
 ALTER TABLE `chefs_locations` ADD FOREIGN KEY (id_chefID) REFERENCES `chefs` (`id`);
 ALTER TABLE `chefs_locations` ADD FOREIGN KEY (id_locationID) REFERENCES `locations` (`id`);
 ALTER TABLE `chefs_cuisines` ADD FOREIGN KEY (id_chefID) REFERENCES `chefs` (`id`);
@@ -281,3 +300,6 @@ INSERT INTO `restrictions` (`restriction`) VALUES
 -- ('','','','');
 -- INSERT INTO `chefs` (`id`,`avgRating`,`bio`,`image`,`id_users`,`createdAt`) VALUES
 -- ('','','','','','');
+
+SET FOREIGN_KEY_CHECKS = 1;
+
