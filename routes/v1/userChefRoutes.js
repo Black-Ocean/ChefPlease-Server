@@ -53,12 +53,18 @@ module.exports = function(app) {
 
   app.get('/chefs', function(req, res, next) {
     let qTerms = req.params;
-    let qString = 'SELECT * FROM chefs';
-    connection.query(qString, function(err, results) {
+    let userID = req.headers['user-id'];
+    let qString = `SELECT 
+                    chef.id, user.name, chef.bio, user.md5, chef.avgRating 
+                  FROM chefs AS chef INNER JOIN users AS user 
+                  ON (chef.id_userID = user.id)`;
+    console.log('userId is ', userID);
+    connection.query(qString, [userID], function(err, results) {
       if (err) {
           res.sendStatus(500);
       }
       // TODO: filter results down and send to client
+      console.log(results);
       res.send(results);
     });
   });

@@ -5,6 +5,7 @@ const connection = require('../../../db/index');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash'); 
 const config = require('./config');
+const md5 = require('md5');
 
 // Middleware to protect view in the app
 exports.isLoggedIn = function (req, res, next) {
@@ -44,9 +45,9 @@ const createSession = function (req, res, newUser) {
   let token = createToken(newUser);
   req.session = {
     id: newUser.id,
+    md5: newUser.md5,
     AuthToken: token
   };
-  console.log(newUser, 'NEW USER TRYING TO CREATE SESSION');
   connection.query(
     'INSERT INTO tokens (token, id_userID) VALUES (?, (SELECT users.id FROM users WHERE users.email=?))',
     [token, newUser.email],
@@ -63,23 +64,27 @@ const createSession = function (req, res, newUser) {
 exports.signUp = function (req, res) {
   let {name, bio, image, email, password} = req.body;
 
-  connection.query('SELECT * from users WHERE email=?', email, 
+  connection.query('SELECT * from users WHERE email=?', [email], 
     function (err, results) {
-      if (results.length) {
-        console.log(results);
+      if (err) {
+        console.log(err);
+        res.send(err);
+      }
+      if (results && results.length) {
         res.status(400).send("A user with that email already exists!");
       } else {
         //create new user
         let user = JSON.parse(JSON.stringify(results))[0];
         bcrypt.hash(password, null, null, function(err, hashedPassword) {
-        let newUser = 'INSERT INTO users (name, bio, image, email, password) VALUES (?, ?, ?, ?, ?)';
+        let newUser = 'INSERT INTO users (name, bio, image, email, password, md5) VALUES (?, ?, ?, ?, ?, ?)';
           // Store hash in your password DB.
-          connection.query(newUser, [name, bio, image, email, hashedPassword],
+          let hashedEmail = md5(email);
+          connection.query(newUser, [name, bio, image, email, hashedPassword, hashedEmail],
             function (err, results) {
               if (err) {
                 console.log(err);
               } else {
-                let newUser = {id: results.insertId, email: email, password: hashedPassword};
+                let newUser = {id: results.insertId, email: email, md5: hashedEmail, password: hashedPassword};
                 createSession(req, res, newUser);
               }
             }
@@ -95,7 +100,7 @@ exports.login = function (req, res) {
     function (err, results) {
       // Invalid Username
       if (results.length === 0) {
-        res.status(400).send('Invalid Username');
+        res.status(400).send('Invalid email or password');
       } else {
       let hash = JSON.parse(JSON.stringify(results))[0].password;
       let id = JSON.parse(JSON.stringify(results))[0].id;
