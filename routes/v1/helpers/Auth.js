@@ -45,6 +45,7 @@ const createSession = function (req, res, newUser) {
   let token = createToken(newUser);
   req.session = {
     id: newUser.id,
+    md5: newUser.md5,
     AuthToken: token
   };
   connection.query(
@@ -81,7 +82,7 @@ exports.signUp = function (req, res) {
               if (err) {
                 console.log(err);
               } else {
-                let newUser = {id: results.insertId, email: email, password: hashedPassword};
+                let newUser = {id: results.insertId, email: email, md5: hashedEmail, password: hashedPassword};
                 createSession(req, res, newUser);
               }
             }
