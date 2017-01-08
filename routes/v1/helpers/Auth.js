@@ -43,6 +43,7 @@ const createToken = (user) => {
 const createSession = function (req, res, newUser) {
   let token = createToken(newUser);
   req.session = {
+    id: newUser.id,
     AuthToken: token
   };
   console.log(newUser, 'NEW USER TRYING TO CREATE SESSION');
@@ -73,13 +74,12 @@ exports.signUp = function (req, res) {
         bcrypt.hash(password, null, null, function(err, hashedPassword) {
         let newUser = 'INSERT INTO users (name, bio, image, email, password) VALUES (?, ?, ?, ?, ?)';
           // Store hash in your password DB.
-          console.log([name, bio, image, email, hashedPassword])
           connection.query(newUser, [name, bio, image, email, hashedPassword],
             function (err, results) {
               if (err) {
                 console.log(err);
               } else {
-                let newUser = {email: email, password: hashedPassword}
+                let newUser = {id: results.insertId, email: email, password: hashedPassword};
                 createSession(req, res, newUser);
               }
             }
