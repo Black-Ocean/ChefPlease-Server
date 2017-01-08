@@ -5,6 +5,7 @@ const connection = require('../../../db/index');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash'); 
 const config = require('./config');
+const md5 = require('md5');
 
 // Middleware to protect view in the app
 exports.isLoggedIn = function (req, res, next) {
@@ -46,7 +47,6 @@ const createSession = function (req, res, newUser) {
     id: newUser.id,
     AuthToken: token
   };
-  console.log(newUser, 'NEW USER TRYING TO CREATE SESSION');
   connection.query(
     'INSERT INTO tokens (token, id_userID) VALUES (?, (SELECT users.id FROM users WHERE users.email=?))',
     [token, newUser.email],
@@ -72,9 +72,11 @@ exports.signUp = function (req, res) {
         //create new user
         let user = JSON.parse(JSON.stringify(results))[0];
         bcrypt.hash(password, null, null, function(err, hashedPassword) {
-        let newUser = 'INSERT INTO users (name, bio, image, email, password) VALUES (?, ?, ?, ?, ?)';
+        let newUser = 'INSERT INTO users (name, bio, image, email, password, md5) VALUES (?, ?, ?, ?, ?, ?)';
           // Store hash in your password DB.
-          connection.query(newUser, [name, bio, image, email, hashedPassword],
+          let hashedEmail = md5(email);
+          console.log(hashedEmail);
+          connection.query(newUser, [name, bio, image, email, hashedPassword, hashedEmail],
             function (err, results) {
               if (err) {
                 console.log(err);
