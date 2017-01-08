@@ -64,10 +64,13 @@ const createSession = function (req, res, newUser) {
 exports.signUp = function (req, res) {
   let {name, bio, image, email, password} = req.body;
 
-  connection.query('SELECT * from users WHERE email=?', email, 
+  connection.query('SELECT * from users WHERE email=?', [email], 
     function (err, results) {
-      if (results.length) {
-        console.log(results);
+      if (err) {
+        console.log(err);
+        res.send(err);
+      }
+      if (results && results.length) {
         res.status(400).send("A user with that email already exists!");
       } else {
         //create new user
@@ -76,7 +79,6 @@ exports.signUp = function (req, res) {
         let newUser = 'INSERT INTO users (name, bio, image, email, password, md5) VALUES (?, ?, ?, ?, ?, ?)';
           // Store hash in your password DB.
           let hashedEmail = md5(email);
-          console.log(hashedEmail);
           connection.query(newUser, [name, bio, image, email, hashedPassword, hashedEmail],
             function (err, results) {
               if (err) {
@@ -98,7 +100,7 @@ exports.login = function (req, res) {
     function (err, results) {
       // Invalid Username
       if (results.length === 0) {
-        res.status(400).send('Invalid Username');
+        res.status(400).send('Invalid email or password');
       } else {
       let hash = JSON.parse(JSON.stringify(results))[0].password;
       let id = JSON.parse(JSON.stringify(results))[0].id;
