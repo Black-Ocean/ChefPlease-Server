@@ -1,5 +1,6 @@
 var url = require('url');
-var connection = require('../../db/index');
+const connection = require('../../db/index');
+const helpers = require('./helpers/eventHelpers.js');
 
 module.exports = function(app) {
   app.route('/events')
@@ -18,14 +19,31 @@ module.exports = function(app) {
         name: req.body.name,
         time: req.body.time,
         location: req.body.location,
-        text: req.body.text,
-      }
+        text: req.body.text
+      };
+      let chefID = req.body.chefId;
+      let userID = req.body.userId;
+      let quantities = req.body.quantity;
+
       connection.query('INSERT INTO events SET ?', eventDetails, 
-        function (err, next) {
+        function (err, results) {
           if (err) {
             res.sendStatus(404).end();
           }
-          res.sendStatus(201);        
+          let eventID = results.insertId;
+          // post into chefs_events
+          connection.query(`INSERT INTO 
+                              chefs_events (id_chefID, id_events) 
+                            VALUES (?, ?)`, [chefID, eventID]);
+          // post into users_events
+          connection.query(`INSERT INTO
+                              users_events (id_users, id_events)
+                            VALUES (?, ?)`, [userID, eventID]);
+          // post into events_dishes
+          connection.query(`INSERT INTO
+                              events_dishes (id_eventID, id_dishID, quantities)
+                            VALUES ${helpers.formatEventDishes(eventID, quantities)}`);
+          res.send(JSON.stringify({ data: eventID }));
         }
       );
     });
