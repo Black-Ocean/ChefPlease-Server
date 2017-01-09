@@ -1,4 +1,6 @@
-# server
+Black Ocean Data API Overview
+
+This document is intended for developers who want to write applications that interact with Black Ocean. It explains basic concepts of the API itself. It also provides an overview of the different functions that the API supports.
 
 # setup
 start mysql server 
