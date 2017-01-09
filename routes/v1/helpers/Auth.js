@@ -73,6 +73,7 @@ exports.signUp = function (req, res) {
         bcrypt.hash(password, null, null, function(err, hashedPassword) {
         let newUser = 'INSERT INTO users (name, bio, image, email, password, md5) VALUES (?, ?, ?, ?, ?, ?)';
           // Store hash in your password DB.
+          email = email || '';
           let hashedEmail = md5(email);  
           connection.query(newUser, [name, bio, image, email, hashedPassword, hashedEmail],
             function (err, results) {
