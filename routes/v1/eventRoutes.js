@@ -11,7 +11,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(404).end();
         } 
-        res.json(results);
+        res.send({data: results});
       });
     })
     .post(function(req, res, next) {
@@ -43,7 +43,7 @@ module.exports = function(app) {
           connection.query(`INSERT INTO
                               events_dishes (id_eventID, id_dishID, quantities)
                             VALUES ${helpers.formatEventDishes(eventID, quantities)}`);
-          res.send(JSON.stringify({ data: eventID }));
+          res.send({ data: eventID });
         }
       );
     });
@@ -106,7 +106,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.send(JSON.stringify({ data: results }));
+        res.send({ data: results });
       })
     })
     .delete(function(req, res, next) {
@@ -131,7 +131,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.send(JSON.stringify({ data: results }));
+        res.send({ data: results });
       });
     })
     .delete(function(req, res, next) {
@@ -157,7 +157,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.send(JSON.stringify({ data: results }));
+        res.send({ data: results });
       });
     })
     // add a user to an event
@@ -170,7 +170,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.send(JSON.stringify({ data: results.insertId }));
+        res.send({ data: results.insertId });
       });
     })
     // remove a user from an event
@@ -199,7 +199,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.send(JSON.stringify({ data: results }));
+        res.send({ data: results });
       });
     })
     // add a chef to an event
@@ -212,7 +212,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.send(JSON.stringify({ data: results.insertId }));
+        res.send({ data: results.insertId });
       });
     })
     // remove a chef from an event
