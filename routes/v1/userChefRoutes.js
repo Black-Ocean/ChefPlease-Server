@@ -2,7 +2,7 @@ var url = require('url');
 const connection = require('../../db/index.js');
 const helpers = require('./helpers/userChefHelpers.js');
 
-module.exports = function(app) {
+module.exports = function(app) {  
   app.get('/users', function(req, res, next) {
     let qString = 'SELECT * FROM users';
     connection.query(qString, function(err, results) {
@@ -10,6 +10,20 @@ module.exports = function(app) {
           res.sendStatus(500);
       }
       res.send(JSON.stringify({ data: results }));
+    });
+  });  
+
+  app.get('/users/name/:id', function(req, res, next) {
+    var id = req.params.id;
+    let qString = 'SELECT * FROM users where id=?';
+    connection.query(qString, [id], function(err, results) {
+      if (err) {
+        console.log('ERRRORRRR')
+        console.log(results, 'RESULTSSS')
+        res.sendStatus(500);
+      } else {
+        res.send(JSON.stringify({ data: results }));        
+      }
     });
   });
 
@@ -20,8 +34,10 @@ module.exports = function(app) {
       function(err, results) {
         if (err) {
           res.sendStatus(500);
+        } else {
+          res.send(JSON.stringify({ data: results.insertId }));
+          
         }
-        res.send(JSON.stringify({ data: results.insertId }));
       }
     );
   });
@@ -35,6 +51,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(404);
         }
+        console.log(results, 'is results of change to user')
         res.send(JSON.stringify({ data: results }));
       }
     )
@@ -67,7 +84,7 @@ module.exports = function(app) {
       console.log(results);
       res.send(results);
     });
-  });
+  });  
 
   app.post('/chefs', function(req, res, next) {
     let chef = req.body;

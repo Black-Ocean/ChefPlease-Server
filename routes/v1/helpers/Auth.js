@@ -1,5 +1,4 @@
 // Auth Service with Token Based Authentication
-const Promise = require('bluebird');
 const bcrypt = require('bcrypt-nodejs');
 const connection = require('../../../db/index');
 const jwt = require('jsonwebtoken');
@@ -15,7 +14,6 @@ exports.isLoggedIn = function (req, res, next) {
     // if the user in the database is found, 
     if (results.length < 1) {
       // if the user is not logged in, redirect the client to login page
-      console.log('USER TOKEN NOT GOOD !!!!');
       res.redirect('/login');
     } else {
       next();
@@ -24,11 +22,10 @@ exports.isLoggedIn = function (req, res, next) {
 };
 
 // //middleware for users FIGURE OUT WHERE THIS GOES
-// exports.isOwnProfile = function () {
-  
-// };
+exports.isOwnProfile = function (req) {
+  return req.headers.isOwnProfile ? true : false;
+};
 
-// WHERE WOULD THIS GO??
 exports.isAChef = function (req, res, next) {
   return req.headers.isAChef ? true : false;
 };
@@ -62,12 +59,11 @@ const createSession = function (req, res, newUser) {
 
 
 exports.signUp = function (req, res) {
+  console.log(req.body, 'IS REQ');
   let {name, bio, image, email, password} = req.body;
-
   connection.query('SELECT * from users WHERE email=?', [email], 
     function (err, results) {
       if (err) {
-        console.log(err);
         res.send(err);
       }
       if (results && results.length) {
@@ -78,7 +74,7 @@ exports.signUp = function (req, res) {
         bcrypt.hash(password, null, null, function(err, hashedPassword) {
         let newUser = 'INSERT INTO users (name, bio, image, email, password, md5) VALUES (?, ?, ?, ?, ?, ?)';
           // Store hash in your password DB.
-          let hashedEmail = md5(email);
+          let hashedEmail = md5(email);  
           connection.query(newUser, [name, bio, image, email, hashedPassword, hashedEmail],
             function (err, results) {
               if (err) {
