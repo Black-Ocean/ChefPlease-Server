@@ -13,17 +13,15 @@ module.exports = function(app) {
     });
   });  
 
-  app.get('/users/name/:name', function(req, res, next) {
-    var name = req.params.name; 
-    console.log(name, 'NAMMMMMMMMMEEE')
-    let qString = 'SELECT * FROM users where name=?';
-    connection.query(qString, [name], function(err, results) {
+  app.get('/users/name/:id', function(req, res, next) {
+    var id = req.params.id;
+    let qString = 'SELECT * FROM users where id=?';
+    connection.query(qString, [id], function(err, results) {
       if (err) {
         console.log('ERRRORRRR')
         console.log(results, 'RESULTSSS')
         res.sendStatus(500);
       } else {
-        console.log('THIS is GOOD ')
         res.send(JSON.stringify({ data: results }));        
       }
     });
@@ -53,6 +51,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(404);
         }
+        console.log(results, 'is results of change to user')
         res.send(JSON.stringify({ data: results }));
       }
     )
@@ -85,7 +84,7 @@ module.exports = function(app) {
       console.log(results);
       res.send(results);
     });
-  });
+  });  
 
   app.post('/chefs', function(req, res, next) {
     let chef = req.body;
