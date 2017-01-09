@@ -18,8 +18,6 @@ module.exports = function(app) {
     let qString = 'SELECT * FROM users where id=?';
     connection.query(qString, [id], function(err, results) {
       if (err) {
-        console.log('ERRRORRRR')
-        console.log(results, 'RESULTSSS')
         res.sendStatus(500);
       } else {
         res.send(JSON.stringify({ data: results }));        
@@ -84,7 +82,19 @@ module.exports = function(app) {
       console.log(results);
       res.send(results);
     });
-  });  
+  }); 
+
+  app.get('/chefs/userId/:userId', function (req, res, next) {
+    let userId = req.params.userId;
+    let qString = `SELECT * FROM CHEFS where id_userID=?`;
+    connection.query(qString, [userId], function (err, results) {
+      if (err) {
+        res.status(500).send('User not found');
+      }
+      res.send(JSON.stringify({ data: results }));      
+    });
+  });
+
 
   app.post('/chefs', function(req, res, next) {
     let chef = req.body;

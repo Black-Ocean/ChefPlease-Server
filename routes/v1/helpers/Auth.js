@@ -59,7 +59,6 @@ const createSession = function (req, res, newUser) {
 
 
 exports.signUp = function (req, res) {
-  console.log(req.body, 'IS REQ');
   let {name, bio, image, email, password} = req.body;
   connection.query('SELECT * from users WHERE email=?', [email], 
     function (err, results) {
@@ -120,7 +119,7 @@ exports.login = function (req, res) {
 }
 
 exports.logOut = function (req,res) {
-  let AuthToken = req.headers.authtoken;
+  let AuthToken = req.headers.AuthToken;
   let query = 'DELETE FROM tokens WHERE tokens.token=?'
   connection.query(query, [AuthToken], function (err, result) {
     // res.redirect('/login');
