@@ -76,12 +76,19 @@ module.exports = function(app) {
           if (err) {
             res.sendStatus(500).end();
           }
-          let query = 'DELETE FROM events WHERE id = ?';
+
+          let query = 'DELETE FROM dishes_events WHERE id_events = ?';
           connection.query(query, [eventId], function(err) {
             if (err) {
               res.sendStatus(500).end();
             }
-            res.sendStatus(202);
+            let query = 'DELETE FROM events WHERE id = ?';
+            connection.query(query, [eventId], function(err) {
+              if (err) {
+                res.sendStatus(500).end();
+              }
+              res.sendStatus(202);
+            });
           });
         });
       });
