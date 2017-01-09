@@ -13,7 +13,7 @@ module.exports = function(app) {
     });
   });  
 
-  app.get('/users/name/:id', function(req, res, next) {
+  app.get('/users/:id', function(req, res, next) {
     var id = req.params.id;
     let qString = 'SELECT * FROM users where id=?';
     connection.query(qString, [id], function(err, results) {
