@@ -99,7 +99,7 @@ module.exports = function(app) {
   app.post('/chefs', function(req, res, next) {
     let chef = req.body;
     let qString = 'INSERT INTO chefs (name, bio, id_userID) \
-                    VALUES (?, ?, ?, ?)';
+                    VALUES (?, ?, ?)';
     connection.query(qString, [chef.name, chef.bio, chef.userID],
       function(err, results) {
         if (err) {
