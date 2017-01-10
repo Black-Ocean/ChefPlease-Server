@@ -10,8 +10,7 @@ var buildSearchQuery = function(queryObj) {
   var result = `SELECT 
                   chef.id, 
                   chef.name, 
-                  chef.bio, 
-                  chef.image, 
+                  chef.bio,
                   chef.avgRating, 
                   chef.id_userID,
                   chef.createdAt

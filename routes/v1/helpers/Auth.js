@@ -59,7 +59,7 @@ const createSession = function (req, res, newUser) {
 
 
 exports.signUp = function (req, res) {
-  let {name, bio, image, email, password} = req.body;
+  let {name, bio, email, password} = req.body;
   connection.query('SELECT * from users WHERE email=?', [email], 
     function (err, results) {
       if (err) {
@@ -71,11 +71,11 @@ exports.signUp = function (req, res) {
         //create new user
         let user = JSON.parse(JSON.stringify(results))[0];
         bcrypt.hash(password, null, null, function(err, hashedPassword) {
-        let newUser = 'INSERT INTO users (name, bio, image, email, password, md5) VALUES (?, ?, ?, ?, ?, ?)';
+        let newUser = 'INSERT INTO users (name, bio, email, password, md5) VALUES (?, ?, ?, ?, ?, ?)';
           // Store hash in your password DB.
           email = email || '';
           let hashedEmail = md5(email);  
-          connection.query(newUser, [name, bio, image, email, hashedPassword, hashedEmail],
+          connection.query(newUser, [name, bio, email, hashedPassword, hashedEmail],
             function (err, results) {
               if (err) {
                 console.log(err);
