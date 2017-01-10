@@ -9,7 +9,7 @@ module.exports = function(app) {
       if (err) {
           res.sendStatus(500);
       }
-      res.send({ data: results });
+      res.send(results);
     });
   });  
 
@@ -20,7 +20,7 @@ module.exports = function(app) {
       if (err) {
         res.sendStatus(500);
       } else {
-        res.send({ data: results });        
+        res.send(results);        
       }
     });
   });
@@ -33,7 +33,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500);
         } else {
-          res.send({ data: results.insertId });
+          res.send(results.insertId);
           
         }
       }
@@ -50,7 +50,7 @@ module.exports = function(app) {
           res.sendStatus(404);
         }
         console.log(results, 'is results of change to user')
-        res.send({ data: results });
+        res.send(results);
       }
     )
   });
@@ -62,7 +62,7 @@ module.exports = function(app) {
       if (err) {
           res.sendStatus(404);
       }
-      res.send({ data: results });
+      res.send(results);
     })
   });
 
@@ -91,7 +91,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('User not found');
       }
-      res.send({ data: results });      
+      res.send(results);      
     });
   });
 
@@ -133,7 +133,7 @@ module.exports = function(app) {
                             [chefID]);
 
           // return id in chefs table for the new chef
-          res.send({ data: chefID });
+          res.send(chefID);
         });
       }
     );
@@ -148,7 +148,7 @@ module.exports = function(app) {
         if (err) {
             res.sendStatus(404);
         }
-        res.send({ data: results });
+        res.send(results);
       }
     );
   });
@@ -161,7 +161,7 @@ module.exports = function(app) {
       if (err) {
         res.sendStatus(404);
       }
-      res.send({ data: results });
+      res.send(results);
     });
   });
 }

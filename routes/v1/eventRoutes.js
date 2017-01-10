@@ -11,7 +11,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(404).end();
         } 
-        res.send({data: results});
+        res.send(results);
       });
     })
     .post(function(req, res, next) {
@@ -43,7 +43,7 @@ module.exports = function(app) {
           connection.query(`INSERT INTO
                               events_dishes (id_eventID, id_dishID, quantities)
                             VALUES ${helpers.formatEventDishes(eventID, quantities)}`);
-          res.send({ data: eventID });
+          res.send(eventID);
         }
       );
     });
@@ -106,7 +106,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.send({ data: results });
+        res.send(results);
       })
     })
     .delete(function(req, res, next) {
@@ -131,7 +131,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.send({ data: results });
+        res.send(results);
       });
     })
     .delete(function(req, res, next) {
@@ -151,13 +151,13 @@ module.exports = function(app) {
       let userId = req.params.id;
       let qString = 'SELECT * FROM events AS e \
                       INNER JOIN users_events AS ue \
-                      ON (e.id = ue.events) \
+                      ON (e.id = ue.id_events) \
                     WHERE ue.id_users = ?';
       connection.query(qString, [userId], function(err, results) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.send({ data: results });
+        res.send(results);
       });
     })
     // add a user to an event
@@ -170,7 +170,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.send({ data: results.insertId });
+        res.send(results.insertId);
       });
     })
     // remove a user from an event
@@ -199,7 +199,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.send({ data: results });
+        res.send(results);
       });
     })
     // add a chef to an event
@@ -212,7 +212,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.send({ data: results.insertId });
+        res.send(results.insertId);
       });
     })
     // remove a chef from an event
