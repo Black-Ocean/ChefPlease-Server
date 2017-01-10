@@ -8,7 +8,7 @@ module.exports = function(app) {
       let qString = 'SELECT * FROM dishes WHERE id_chefID = ';
 
       connection.query(qString, [chefID], function(err, results) {
-        res.send(JSON.stringify({ data: results }));
+        res.send({ data: results });
       });
     })
     .post(function(req, res, next) {
@@ -24,7 +24,7 @@ module.exports = function(app) {
           if (err) {
             res.sendStatus(500);
           }
-          res.send(JSON.stringify({ data: results.insertId }));
+          res.send({ data: results.insertId });
         }
       );
     });
@@ -46,7 +46,7 @@ module.exports = function(app) {
           res.sendStatus(200);
         }
       );
-      res.send(JSON.stringify({ data: insertId }));
+      res.send({ data: insertId });
     })
     .delete(function(req, res, next) {
       let dish = req.body;
