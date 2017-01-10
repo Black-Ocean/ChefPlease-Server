@@ -9,8 +9,8 @@ const util = require('./routes/v1/helpers/Auth');
 
 app.set('port', (process.env.PORT || 3000));
 
-app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(bodyParser.json()); // for parsing application/json
 
 // app.use('/users', function (req, res, next) {
 //   util.isLoggedIn(req, res);

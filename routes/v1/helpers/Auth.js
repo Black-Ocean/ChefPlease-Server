@@ -74,6 +74,11 @@ exports.signUp = function (req, res) {
           let newUser = 'INSERT INTO users (name, bio, email, password, md5) VALUES (?, ?, ?, ?, ?)';
           // Store hash in your password DB.
           console.log('email is', email);
+=======
+        let newUser = 'INSERT INTO users (name, bio, email, password, md5) VALUES (?, ?, ?, ?, ?)';
+          // Store hash in your password DB.
+          console.log(email, 'is EMAIL')
+>>>>>>> Commit before rebase
           email = email || '';
           let hashedEmail = md5(email);  
           console.log('hashed email is', hashedEmail);
