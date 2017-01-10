@@ -27,8 +27,8 @@ module.exports = function(app) {
 
   app.post('/users', function(req, res, next) {
     let user = req.body;
-    let qString = 'INSERT INTO users (name, bio, image) VALUES (?, ?, ?)';
-    connection.query(qString, [user.name, user.bio, user.image],
+    let qString = 'INSERT INTO users (name, bio) VALUES (?, ?)';
+    connection.query(qString, [user.name, user.bio],
       function(err, results) {
         if (err) {
           res.sendStatus(500);
@@ -43,8 +43,8 @@ module.exports = function(app) {
   app.put('/users/:id', function(req, res, next) {
     let user = req.body;
     let userID = req.params.id;
-    let qString = 'UPDATE users SET name = ?, bio = ?, image = ? WHERE id = ?';
-    connection.query(qString, [user.name, user.bio, user.image, userID], 
+    let qString = 'UPDATE users SET name = ?, bio = ?, WHERE id = ?';
+    connection.query(qString, [user.name, user.bio, userID], 
       function(err, results) {
         if (err) {
           res.sendStatus(404);
@@ -98,9 +98,9 @@ module.exports = function(app) {
 
   app.post('/chefs', function(req, res, next) {
     let chef = req.body;
-    let qString = 'INSERT INTO chefs (name, bio, image, id_userID) \
-                    VALUES (?, ?, ?, ?)';
-    connection.query(qString, [chef.name, chef.bio, chef.image, chef.userID],
+    let qString = 'INSERT INTO chefs (name, bio, id_userID) \
+                    VALUES (?, ?, ?)';
+    connection.query(qString, [chef.name, chef.bio, chef.userID],
       function(err, results) {
         if (err) {
           res.sendStatus(500);
@@ -142,8 +142,8 @@ module.exports = function(app) {
   app.put('/chefs/:id', function(req, res, next) {
     let chef = req.body;
     let chefID = req.params.id;
-    let qString = 'UPDATE chefs SET name = ?, bio = ?, image = ? WHERE id = ?';
-    connection.query(qString, [chef.name, chef.bio, chef.image, chefID],
+    let qString = 'UPDATE chefs SET name = ?, bio = ? WHERE id = ?';
+    connection.query(qString, [chef.name, chef.bio, chefID],
       function(err, results) {
         if (err) {
             res.sendStatus(404);
