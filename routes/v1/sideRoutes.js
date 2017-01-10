@@ -8,7 +8,7 @@ module.exports = function(app) {
       if (err) {
         res.sendStatus(500);
       }
-      res.send(JSON.stringify({ data: results }));
+      res.send({ data: results });
     });
   });
 
@@ -18,7 +18,7 @@ module.exports = function(app) {
       if (err) {
         res.sendStatus(500);
       }
-      res.send(JSON.stringify({ data: results }));
+      res.send({ data: results });
     });
   });
 
@@ -28,7 +28,7 @@ module.exports = function(app) {
       if (err) {
         res.sendStatus(500);
       }
-      res.send(JSON.stringify({ data: results }));
+      res.send({ data: results });
     });
   });
 }

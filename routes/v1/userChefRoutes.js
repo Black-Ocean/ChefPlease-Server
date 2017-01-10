@@ -9,7 +9,7 @@ module.exports = function(app) {
       if (err) {
           res.sendStatus(500);
       }
-      res.send(JSON.stringify({ data: results }));
+      res.send({ data: results });
     });
   });  
 
@@ -20,7 +20,7 @@ module.exports = function(app) {
       if (err) {
         res.sendStatus(500);
       } else {
-        res.send(JSON.stringify({ data: results }));        
+        res.send({ data: results });        
       }
     });
   });
@@ -33,7 +33,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500);
         } else {
-          res.send(JSON.stringify({ data: results.insertId }));
+          res.send({ data: results.insertId });
           
         }
       }
@@ -50,7 +50,7 @@ module.exports = function(app) {
           res.sendStatus(404);
         }
         console.log(results, 'is results of change to user')
-        res.send(JSON.stringify({ data: results }));
+        res.send({ data: results });
       }
     )
   });
@@ -62,7 +62,7 @@ module.exports = function(app) {
       if (err) {
           res.sendStatus(404);
       }
-      res.send(JSON.stringify({ data: results }));
+      res.send({ data: results });
     })
   });
 
@@ -91,7 +91,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('User not found');
       }
-      res.send(JSON.stringify({ data: results }));      
+      res.send({ data: results });      
     });
   });
 
@@ -133,7 +133,7 @@ module.exports = function(app) {
                             [chefID]);
 
           // return id in chefs table for the new chef
-          res.send(JSON.stringify({ data: chefID }));
+          res.send({ data: chefID });
         });
       }
     );
@@ -148,7 +148,7 @@ module.exports = function(app) {
         if (err) {
             res.sendStatus(404);
         }
-        res.send(JSON.stringify({ data: results }));
+        res.send({ data: results });
       }
     );
   });
@@ -161,7 +161,7 @@ module.exports = function(app) {
       if (err) {
         res.sendStatus(404);
       }
-      res.send(JSON.stringify({ data: results }));
+      res.send({ data: results });
     });
   });
 }
