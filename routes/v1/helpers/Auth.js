@@ -71,7 +71,7 @@ exports.signUp = function (req, res) {
         //create new user
         let user = JSON.parse(JSON.stringify(results))[0];
         bcrypt.hash(password, null, null, function(err, hashedPassword) {
-        let newUser = 'INSERT INTO users (name, bio, email, password, md5) VALUES (?, ?, ?, ?, ?)';
+          let newUser = 'INSERT INTO users (name, bio, email, password, md5) VALUES (?, ?, ?, ?, ?)';
           // Store hash in your password DB.
           console.log('email is', email);
           email = email || '';
