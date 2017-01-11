@@ -1,5 +1,6 @@
 import test from 'tape';
-var request = require('request');
+// var request = require('request');
+var request = require('superagent');
 
 
 const before = test;
@@ -52,12 +53,31 @@ before('before', function (assert) {
 // });
 
 test('All chef routes handle good request and bad requests to not crash server', (assert) => {
-  request.post('http://127.0.0.1:3000/chefs/userId/1',
-      {'content-type': 'application/json'},
-    )
-    .on('response', function (err, resp, body) {
-      assert.equal(resp.body, 'Dish was created!!')
-  });
+  request
+    .post('http://127.0.0.1:3000/chefs/userId/1')
+    .send({
+            "name": "pasta",
+            "text": "yummy noodles",
+            "image": "image.url",
+            "price": "10",
+            "restrictions": "vegan",
+            "cuisine": "italian"
+          })
+    .set('Accept', 'application/json')
+    .end(function (err, res) {
+      assert.equal(res.body, 'Dish was created!!');
+    })
+    // .on('response', function (err, resp, body) {
+    //   assert.equal(body, 'Dish was created!!')
+    // });
+
+  request.get('http://127.0.0.1:3000/dishes/chefs/1')
+    .end(function (err, res, body) {
+      assert.equal(res.body, res.body);
+  })
+
+
+
 
   assert.end();
 

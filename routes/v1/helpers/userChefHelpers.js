@@ -4,7 +4,7 @@ var formatSearch = function(arrayString) {
   return arrayString.substring(1, arrayString.length - 1);
 };
 
-var buildSearchQuery = function(queryObj) {
+var chefSearchQuery = function(queryObj) {
   // let { cuisine, location, restriction } = queryObj;
 
   var result = `SELECT 
@@ -34,5 +34,5 @@ var buildSearchQuery = function(queryObj) {
 
 module.exports = {
   formatSearch : formatSearch,
-  buildSearchQuery : buildSearchQuery
+  chefSearchQuery : chefSearchQuery
 };

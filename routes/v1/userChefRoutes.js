@@ -14,8 +14,9 @@ module.exports = function(app) {
     });
   });  
 
-  app.get('/users/:id', util.isLoggedIn, function(req, res, next) {
+  app.get('/users/:id', function(req, res, next) {
     var id = req.params.id;
+    console.log(id, 'is IDDDD')
     let qString = 'SELECT * FROM users where id=?';
     connection.query(qString, [id], function(err, results) {
       if (err) {
@@ -67,7 +68,7 @@ module.exports = function(app) {
     })
   });
 
-  app.get('/chefs', util.isLoggedIn, function(req, res, next) {
+  app.get('/chefs', function(req, res, next) {
     let qTerms = req.params;
     let userID = req.headers['user-id'];
     let qString = `SELECT 
@@ -139,7 +140,7 @@ module.exports = function(app) {
     );
   });
 
-  app.put('/chefs/:id', util.isLoggedIn, function(req, res, next) {
+  app.put('/chefs/:id', function(req, res, next) {
     let chef = req.body;
     let chefID = req.params.id;
     let qString = 'UPDATE chefs SET name = ?, bio = ? WHERE id = ?';
@@ -148,7 +149,7 @@ module.exports = function(app) {
         if (err) {
             res.sendStatus(404);
         }
-        res.send(results);
+        res.send('Chef was updated!');
       }
     );
   });
