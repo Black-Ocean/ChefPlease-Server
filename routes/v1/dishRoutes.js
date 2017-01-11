@@ -28,6 +28,7 @@ module.exports = function(app) {
           } else {
             res.send('Dish was created!!');
           }
+          res.send(results.insertId.toString());
         }
       );
     });
@@ -49,7 +50,7 @@ module.exports = function(app) {
           res.sendStatus(200);
         }
       );
-      res.send(insertId);
+      res.end(insertId);
     })
     .delete(function(req, res, next) {
       let dish = req.body;
