@@ -8,13 +8,13 @@ const md5 = require('md5');
 
 // Middleware to protect view in the app
 exports.isLoggedIn = function (req, res, next) {
-  let AuthToken = req.headers.AuthToken;
+  let AuthToken = req.headers.authtoken;
   let query = 'Select * FROM tokens WHERE tokens.token=?'
   connection.query(query, [AuthToken], function (err, results) {
-    // if the user in the database is found, 
+    // if the user in the database is found,
+    console.log(err);
     if (results.length < 1) {
-      // if the user is not logged in, redirect the client to login page
-      res.redirect('/login');
+      res.status(500).send('Not logged in');
     } else {
       next();
     };
@@ -50,7 +50,6 @@ const createSession = function (req, res, newUser) {
     [token, newUser.email],
     function (err, results) {
       if (err) {console.log(err)}
-      console.log(results);
     }
   );
   res.status(201).send(req.session);
@@ -59,6 +58,7 @@ const createSession = function (req, res, newUser) {
 
 
 exports.signUp = function (req, res) {
+  console.log(req.body);
   let {name, bio, email, password} = req.body;
   connection.query('SELECT * from users WHERE email=?', [email], 
     function (err, results) {
@@ -73,9 +73,7 @@ exports.signUp = function (req, res) {
         bcrypt.hash(password, null, null, function(err, hashedPassword) {
           let newUser = 'INSERT INTO users (name, bio, email, password, md5) VALUES (?, ?, ?, ?, ?)';
           // Store hash in your password DB.
-          console.log('email is', email);
           let hashedEmail = md5(email);  
-          console.log('hashed email is', hashedEmail);
           connection.query(newUser, [name, bio, email, hashedPassword, hashedEmail],
             function (err, results) {
               if (err) {
@@ -121,10 +119,9 @@ exports.login = function (req, res) {
 }
 
 exports.logOut = function (req,res) {
-  let AuthToken = req.headers.AuthToken;
+  let AuthToken = req.headers.authtoken;
   let query = 'DELETE FROM tokens WHERE tokens.token=?'
   connection.query(query, [AuthToken], function (err, result) {
-    // res.redirect('/login');
     res.status(200).send('User Token has been deleted')
   });
 };
