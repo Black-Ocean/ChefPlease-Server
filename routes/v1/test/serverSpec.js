@@ -265,7 +265,7 @@ describe('', function() {
         }
       };
       request(options, function (err, res, body) {
-        expect(res.body).to.be.a('number')
+        expect(res.body).to.be.a('object')
         done();
       })
     });
@@ -276,7 +276,11 @@ describe('', function() {
         'uri': 'http://127.0.0.1:3000/events/users/1',
       };
       request(options, function (err, res, body) {
-        expect(res.body).to.equal({});        
+        if (err) {
+          console.log(err)
+        } else {
+          expect(res.body).to.equal('this test should fail!!');        
+        }
         done();
       })
 
