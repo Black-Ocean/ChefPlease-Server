@@ -17,7 +17,7 @@ module.exports = function(app) {
     .post(function(req, res, next) {
       var eventDetails = {
         name: req.body.name,
-        time: req.body.time,
+        // time: req.body.time,
         location: req.body.location,
         text: req.body.text
       };
@@ -25,7 +25,7 @@ module.exports = function(app) {
       let userID = req.body.userId;
       let quantities = req.body.quantity;
 
-      connection.query('INSERT INTO events SET ?', eventDetails, 
+      connection.query('INSERT INTO events SET ?', [eventDetails], 
         function (err, results) {
           if (err) {
             res.sendStatus(404).end();
@@ -43,58 +43,12 @@ module.exports = function(app) {
           connection.query(`INSERT INTO
                               events_dishes (id_eventID, id_dishID, quantities)
                             VALUES ${helpers.formatEventDishes(eventID, quantities)}`);
-          res.send(eventID);
+          res.send(eventID.toString());
         }
       );
     });
 
-  app.route('events/:id')
-    .put(function (req, res, next) {
-      let {name, time, location, text} = req.body;
-      let eventId = parseInt(req.params.id);
-      let qString = 'UPDATE events \
-                      SET name = ?, time = ?, location = ?, text = ? \
-                    WHERE id = ?';
-      connection.query(qString, [name, time, location, text, eventId],
-        function(err, results) {
-          if (err) {
-            res.sendStatus(500).end();
-          }
-          res.send(results);
-        }
-      );
-    })
-    .delete(function (req, res, next) {
-      let eventId = parseInt(req.params.id);
-      let qString = 'DELETE FROM users_events WHERE id_events = ?';
-      connection.query(qString, [eventId], function(err) {
-        if (err) {
-          res.sendStatus(500).end();
-        } 
-        let query = 'DELETE FROM chefs_events WHERE id_events = ?';
-        connection.query(query, [eventId], function(err) {
-          if (err) {
-            res.sendStatus(500).end();
-          }
-
-          let query = 'DELETE FROM dishes_events WHERE id_events = ?';
-          connection.query(query, [eventId], function(err) {
-            if (err) {
-              res.sendStatus(500).end();
-            }
-            let query = 'DELETE FROM events WHERE id = ?';
-            connection.query(query, [eventId], function(err) {
-              if (err) {
-                res.sendStatus(500).end();
-              }
-              res.sendStatus(202);
-            });
-          });
-        });
-      });
-    });
-
-  app.route('events/:id/users')
+  app.route('/events/:id/users')
     // get all users for an event
     .get(function(req, res, next) {
       let eventId = req.params.id;
@@ -108,41 +62,6 @@ module.exports = function(app) {
         }
         res.send(results);
       })
-    })
-    .delete(function(req, res, next) {
-      let eventId = req.params.id;
-      let qString = 'DELETE FROM users_events WHERE id_events = ?';
-      connection.query(qString, [eventId], function(err, results) {
-        if (err) {
-          res.sendStatus(500).end();
-        }
-        res.sendStatus(202);
-      });
-    });
-
-  app.route('events/:id/chefs')
-    .get(function(req, res, next) {
-      let eventId = req.params.id;
-      let qString = 'SELECT * FROM chefs AS chef \
-                      INNER JOIN chefs_events AS ce \
-                      ON (chef.id = ce.id_chefs) \
-                     WHERE ce.id_events = ?';
-      connection.query(qString, [eventId], function(err, results) {
-        if (err) {
-          res.sendStatus(500).end();
-        }
-        res.send(results);
-      });
-    })
-    .delete(function(req, res, next) {
-      let eventId = req.params.id;
-      let qString = 'DELETE FROM chefs_events WHERE id_events = ?';
-      connection.query(qString, [eventId], function(err, results) {
-        if (err) {
-          res.sendStatus(500).end();
-        }
-        res.sendStatus(202);
-      });
     });
 
   app.route('/events/users/:id')
@@ -159,73 +78,22 @@ module.exports = function(app) {
         }
         res.send(results);
       });
-    })
-    // add a user to an event
-    .post(function(req, res, next) {
-      let userId = req.params.id;
-      let eventId = req.body.eventId;
-      let qString = 'INSERT INTO users_events (id_users, id_events) \
-                     VALUES (?, ?)';
-      connection.query(qString, [userId, eventId], function(err, results) {
-        if (err) {
-          res.sendStatus(500).end();
-        }
-        res.send(results.insertId);
-      });
-    })
-    // remove a user from an event
-    .delete(function(req, res, next) {
-      let userId = req.params.id;
-      let eventId = req.body.eventId;
-      let qString = 'DELETE FROM users_events \
-                     WHERE id_users = ? AND id_events = ?';
-      connection.query(qString, [userId, eventId], function(err, results) {
-        if (err) {
-          res.sendStatus(500).end();
-        }
-        res.sendStatus(202);
-      })
     });
 
   app.route('/events/chefs/:id')
     // get all events for a chef
     .get(function(req, res, next) {
-      let userId = req.params.id;
+      let chefId = req.params.id;
       let qString = 'SELECT * FROM events AS e \
                       INNER JOIN chefs_events AS ce \
-                      ON (e.id = ue.events) \
-                    WHERE ce.id_chefs = ?';
-      connection.query(qString, [userId], function(err, results) {
+                      ON (e.id = ce.id_events) \
+                    WHERE ce.id_chefID = ?';
+      connection.query(qString, [chefId], function(err, results) {
         if (err) {
           res.sendStatus(500).end();
         }
         res.send(results);
       });
-    })
-    // add a chef to an event
-    .post(function(req, res, next) {
-      let userId = req.params.id;
-      let eventId = req.body.eventId;
-      let qString = 'INSERT INTO chefs_events (id_users, id_events) \
-                     VALUES (?, ?)';
-      connection.query(qString, [userId, eventId], function(err, results) {
-        if (err) {
-          res.sendStatus(500).end();
-        }
-        res.send(results.insertId);
-      });
-    })
-    // remove a chef from an event
-    .delete(function(req, res, next) {
-      let userId = req.params.id;
-      let eventId = req.body.eventId;
-      let qString = 'DELETE FROM chefs_events \
-                     WHERE id_chefs = ? AND id_events = ?';
-      connection.query(qString, [userId, eventId], function(err, results) {
-        if (err) {
-          res.sendStatus(500).end();
-        }
-        res.sendStatus(202);
-      })
     });
+    
 }
