@@ -12,7 +12,7 @@
 -- DROP DATABASE IF EXISTS `black_ocean`;
 -- CREATE DATABASE IF NOT EXISTS black_ocean;
 
-USE black_ocean;
+-- USE black_ocean;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
