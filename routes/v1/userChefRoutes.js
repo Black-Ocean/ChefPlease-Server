@@ -1,6 +1,7 @@
-var url = require('url');
+const url = require('url');
 const connection = require('../../db/index.js');
 const helpers = require('./helpers/userChefHelpers.js');
+const util = require('./helpers/Auth.js');
 
 module.exports = function(app) {  
   app.get('/users', function(req, res, next) {
@@ -13,7 +14,7 @@ module.exports = function(app) {
     });
   });  
 
-  app.get('/users/:id', function(req, res, next) {
+  app.get('/users/:id', util.isLoggedIn, function(req, res, next) {
     var id = req.params.id;
     let qString = 'SELECT * FROM users where id=?';
     connection.query(qString, [id], function(err, results) {
@@ -25,7 +26,7 @@ module.exports = function(app) {
     });
   });
 
-  app.post('/users', function(req, res, next) {
+  app.post('/users', util.isLoggedIn, function(req, res, next) {
     let user = req.body;
     let qString = 'INSERT INTO users (name, bio) VALUES (?, ?)';
     connection.query(qString, [user.name, user.bio],
@@ -40,7 +41,7 @@ module.exports = function(app) {
     );
   });
 
-  app.put('/users/:id', function(req, res, next) {
+  app.put('/users/:id', util.isLoggedIn, function(req, res, next) {
     let user = req.body;
     let userID = req.params.id;
     let qString = 'UPDATE users SET name = ?, bio = ?, WHERE id = ?';
@@ -55,7 +56,7 @@ module.exports = function(app) {
     )
   });
 
-  app.delete('/users/:id', function(req, res, next) {
+  app.delete('/users/:id', util.isLoggedIn, function(req, res, next) {
     let userID = req.params.id;
     let qString = 'DELETE FROM users WHERE id = ?';
     connection.query(qString, [userID], function(err, results) {
@@ -66,7 +67,7 @@ module.exports = function(app) {
     })
   });
 
-  app.get('/chefs', function(req, res, next) {
+  app.get('/chefs', util.isLoggedIn, function(req, res, next) {
     let qTerms = req.params;
     let userID = req.headers['user-id'];
     let qString = `SELECT 
@@ -84,7 +85,7 @@ module.exports = function(app) {
     });
   }); 
 
-  app.get('/chefs/userId/:userId', function (req, res, next) {
+  app.get('/chefs/userId/:userId', util.isLoggedIn, function (req, res, next) {
     let userId = req.params.userId;
     let qString = `SELECT * FROM CHEFS where id_userID=?`;
     connection.query(qString, [userId], function (err, results) {
@@ -95,8 +96,7 @@ module.exports = function(app) {
     });
   });
 
-
-  app.post('/chefs', function(req, res, next) {
+  app.post('/chefs', util.isLoggedIn, function(req, res, next) {
     let chef = req.body;
     let qString = 'INSERT INTO chefs (name, bio, id_userID) \
                     VALUES (?, ?, ?)';
@@ -139,7 +139,7 @@ module.exports = function(app) {
     );
   });
 
-  app.put('/chefs/:id', function(req, res, next) {
+  app.put('/chefs/:id', util.isLoggedIn, function(req, res, next) {
     let chef = req.body;
     let chefID = req.params.id;
     let qString = 'UPDATE chefs SET name = ?, bio = ? WHERE id = ?';
@@ -153,7 +153,7 @@ module.exports = function(app) {
     );
   });
 
-  app.delete('/chefs/:id', function(req, res, next) {
+  app.delete('/chefs/:id', util.isLoggedIn, function(req, res, next) {
     let chef = req.body;
     let chefID = req.params.id;
     let qString = 'DELETE FROM chefs WHERE id = ?';
