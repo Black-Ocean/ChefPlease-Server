@@ -11,13 +11,13 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(404).end();
         } 
-        res.end(results);
+        res.send(results);
       });
     })
     .post(function(req, res, next) {
       var eventDetails = {
         name: req.body.name,
-        time: req.body.time,
+        // time: req.body.time,
         location: req.body.location,
         text: req.body.text
       };
@@ -25,7 +25,7 @@ module.exports = function(app) {
       let userID = req.body.userId;
       let quantities = req.body.quantity;
 
-      connection.query('INSERT INTO events SET ?', eventDetails, 
+      connection.query('INSERT INTO events SET ?', [eventDetails], 
         function (err, results) {
           if (err) {
             res.sendStatus(404).end();
@@ -60,7 +60,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.end(results);
+        res.send(results);
       })
     });
 
@@ -76,7 +76,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.end(results);
+        res.send(results);
       });
     });
 
@@ -92,7 +92,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(500).end();
         }
-        res.end(results);
+        res.send(results);
       });
     });
     

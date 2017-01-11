@@ -10,6 +10,13 @@ var connection = mysql.createConnection({
   }
 });
 
+// var connection = mysql.createConnection({
+//   host: 'localhost',
+//   user     : 'root',
+//   password : '',
+//   database : 'black_ocean'
+// });
+
 setInterval(function () {
     connection.query('SELECT 1');
 }, 5000);

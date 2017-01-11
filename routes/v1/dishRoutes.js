@@ -5,10 +5,13 @@ module.exports = function(app) {
   app.route('/dishes/chefs/:id')
     .get(function(req, res, next) {
       let chefId = req.params.id;
-      let qString = 'SELECT * FROM dishes WHERE id_chefID = ';
+      let qString = 'SELECT * FROM dishes WHERE id_chefID = ?';
 
       connection.query(qString, [chefID], function(err, results) {
-        res.end(results);
+        if(err) {
+          console.log(err);
+        }
+        res.send(results);
       });
     })
     .post(function(req, res, next) {
