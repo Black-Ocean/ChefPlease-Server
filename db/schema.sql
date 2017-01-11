@@ -12,7 +12,7 @@
 -- DROP DATABASE IF EXISTS `black_ocean`;
 -- CREATE DATABASE IF NOT EXISTS black_ocean;
 
--- USE black_ocean;
+USE black_ocean;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -31,17 +31,32 @@ CREATE TABLE `users` (
 );
 
 -- ---
--- Table 'reviews'
+-- Table 'chefs'
 -- 
 -- ---
 
-DROP TABLE IF EXISTS `reviews`;
+DROP TABLE IF EXISTS `chefs`;
     
-CREATE TABLE `reviews` (
+CREATE TABLE `chefs` (
   `id` INTEGER AUTO_INCREMENT,
-  `id_chefID` INTEGER NULL DEFAULT NULL,
+  `name` VARCHAR(32) NULL DEFAULT NULL,
+  `bio` VARCHAR(256) NULL DEFAULT NULL,
+  `avgRating` FLOAT NULL DEFAULT NULL,
   `id_userID` INTEGER NULL DEFAULT NULL,
-  `text` VARCHAR(256) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+-- ---
+-- Table 'tokens'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `tokens`;
+
+CREATE TABLE `tokens` (
+  `id` INTEGER AUTO_INCREMENT,
+  `token` VARCHAR(1000) NULL DEFAULT NULL,
+  `id_userID` INTEGER NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -81,16 +96,56 @@ CREATE TABLE `dishes` (
 );
 
 -- ---
--- Table 'tokens'
+-- Table 'reviews'
 -- 
 -- ---
 
-DROP TABLE IF EXISTS `tokens`;
-
-CREATE TABLE `tokens` (
+DROP TABLE IF EXISTS `reviews`;
+    
+CREATE TABLE `reviews` (
   `id` INTEGER AUTO_INCREMENT,
-  `token` VARCHAR(1000) NULL DEFAULT NULL,
+  `id_chefID` INTEGER NULL DEFAULT NULL,
   `id_userID` INTEGER NULL DEFAULT NULL,
+  `text` VARCHAR(256) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+-- ---
+-- Table 'locations'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `locations`;
+    
+CREATE TABLE `locations` (
+  `id` INTEGER AUTO_INCREMENT,
+  `city` VARCHAR(64) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+-- ---
+-- Table 'cuisines'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `cuisines`;
+    
+CREATE TABLE `cuisines` (
+  `id` INTEGER AUTO_INCREMENT,
+  `cuisine` VARCHAR(32) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+-- ---
+-- Table 'restrictions'
+-- 
+-- ---
+
+DROP TABLE IF EXISTS `restrictions`;
+    
+CREATE TABLE `restrictions` (
+  `id` INTEGER AUTO_INCREMENT,
+  `restriction` VARCHAR(32) NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -176,61 +231,6 @@ CREATE TABLE `events_dishes` (
   `id_eventID` INTEGER NULL DEFAULT NULL,
   `id_dishID` INTEGER NULL DEFAULT NULL,
   `quantities` INTEGER NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-);
-
--- ---
--- Table 'locations'
--- 
--- ---
-
-DROP TABLE IF EXISTS `locations`;
-    
-CREATE TABLE `locations` (
-  `id` INTEGER AUTO_INCREMENT,
-  `city` VARCHAR(64) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-);
-
--- ---
--- Table 'cuisines'
--- 
--- ---
-
-DROP TABLE IF EXISTS `cuisines`;
-    
-CREATE TABLE `cuisines` (
-  `id` INTEGER AUTO_INCREMENT,
-  `cuisine` VARCHAR(32) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-);
-
--- ---
--- Table 'restrictions'
--- 
--- ---
-
-DROP TABLE IF EXISTS `restrictions`;
-    
-CREATE TABLE `restrictions` (
-  `id` INTEGER AUTO_INCREMENT,
-  `restriction` VARCHAR(32) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-);
-
--- ---
--- Table 'chefs'
--- 
--- ---
-
-DROP TABLE IF EXISTS `chefs`;
-    
-CREATE TABLE `chefs` (
-  `id` INTEGER AUTO_INCREMENT,
-  `name` VARCHAR(32) NULL DEFAULT NULL,
-  `bio` VARCHAR(256) NULL DEFAULT NULL,
-  `avgRating` FLOAT NULL DEFAULT NULL,
-  `id_userID` INTEGER NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
 

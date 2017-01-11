@@ -1,12 +1,29 @@
-var formatSearch = function(arrayString) {
-  // remove '[' and ']' from the arrayString
-  // TODO: escape characters to prevent xss scripting attacks
-  return arrayString.substring(1, arrayString.length - 1);
+// formatSearch:
+// Formats the input into '('ele1', 'ele2', 'ele3', ...)'
+// Used for building the post query to /chefs
+var formatSearch = function(input) {
+  let formatStringArray = function(sArray) {
+    return `(${sArray.substring(1, sArray.length - 1)})`;
+  }
+
+  let formatArray = function(array) {
+    let result = '';
+    if (array.length === 1) {
+      result = result.concat('"', array[0], '"');
+    } else if (array.length > 1){
+      for (let i = 0; i < array.length; i++) {
+        result = result.concat('"', array[i], '"', ',')
+      }
+    }
+    return `(${result})`;
+  }
+
+  return (Array.isArray(input) ? formatArray(input): formatStringArray(input));
 };
 
-var buildSearchQuery = function(queryObj) {
+var chefSearchQuery = function(queryObj) {
   // let { cuisine, location, restriction } = queryObj;
-
+  if (restriction)
   var result = `SELECT 
                   chef.id, 
                   chef.name, 
