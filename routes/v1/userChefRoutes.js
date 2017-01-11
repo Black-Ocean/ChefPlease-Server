@@ -40,21 +40,20 @@ module.exports = function(app) {
   });
 
   app.get('/chefs', function(req, res, next) {
-    let qTerms = req.params;
     let userID = req.headers['user-id'];
-    let qString = `SELECT 
-                    chef.id, user.name, chef.bio, user.md5, chef.avgRating 
-                  FROM chefs AS chef INNER JOIN users AS user 
-                  ON (chef.id_userID = user.id)`;
-    connection.query(qString, [userID], function(err, results) {
-      if (err) {
-          res.sendStatus(500);
+    let qString = helpers.chefSearchQuery(req.query);
+    connection.query(qString, [req.query.cuisine, req.query.location], 
+      function(err, chefResults) {
+        if (err) {
+            res.sendStatus(500);
+        }
+        // filter out duplicate chefs
+        res.send(helpers.removeDuplicates(chefResults));
       }
-      // TODO: filter results down and send to client
-      res.send(results);
-    });
+    );
   }); 
 
+  // 
   app.get('/chefs/userId/:userId', function (req, res, next) {
     let userId = req.params.userId;
     let qString = `SELECT * FROM CHEFS where id_userID=?`;
