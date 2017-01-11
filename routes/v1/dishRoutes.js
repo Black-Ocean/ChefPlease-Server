@@ -5,9 +5,12 @@ module.exports = function(app) {
   app.route('/dishes/chefs/:id')
     .get(function(req, res, next) {
       let chefId = req.params.id;
-      let qString = 'SELECT * FROM dishes WHERE id_chefID = ';
+      let qString = 'SELECT * FROM dishes WHERE id_chefID = ?';
 
       connection.query(qString, [chefID], function(err, results) {
+        if(err) {
+          console.log(err);
+        }
         res.send(results);
       });
     })
@@ -24,7 +27,7 @@ module.exports = function(app) {
           if (err) {
             res.sendStatus(500);
           }
-          res.send(results.insertId);
+          res.send(results.insertId.toString());
         }
       );
     });
@@ -46,7 +49,7 @@ module.exports = function(app) {
           res.sendStatus(200);
         }
       );
-      res.send(insertId);
+      res.end(insertId);
     })
     .delete(function(req, res, next) {
       let dish = req.body;
