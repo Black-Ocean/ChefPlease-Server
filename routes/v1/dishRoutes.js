@@ -16,22 +16,17 @@ module.exports = function(app) {
       });
     })
     .post(function(req, res, next) {
-      console.log(req.body);
-      let dish = req.body;
       let chefId = req.params.id;
-      console.log(dish.name, dish.text, dish.image, 'DISH STUFF');
-      let qString = 'INSERT INTO dishes \
-                      (name, text, image, price, id_chefID) \
-                    VALUES (?, ?, ?, ?, ?)';
+
+      let {name, text, image, price, restrictions, cuisine} = req.body
+      let qString = 'INSERT INTO dishes (name, text, image, price, restrictions, cuisines, id_chefID) VALUES (?, ?, ?, ?, ?, ?, ?)'
       connection.query(qString, 
-        [dish.name, dish.text, dish.image, parseInt(dish.price), chefId],
+        [name, text, image, parseInt(price), restrictions, cuisine, chefId],
         function(err, results) {
           if (err) {
             res.sendStatus(500);
           } else {
-            console.log(results, 'RESULTS');
-            console.log(results.insertId, 'RESULTSINSERTID');
-            res.send(results.insertId);
+            res.send('Dish was created!!');
           }
         }
       );
