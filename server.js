@@ -20,6 +20,11 @@ app.use(function(err, req, res, next) {
   res.status(status).send(err.message);
 });
 
-app.listen(app.get('port'), function () {
-  console.log('Example app listening on port', app.get('port'));
-});
+
+if (module.parent) {
+  module.exports = app;
+} else {
+  app.listen(app.get('port'), function () {
+    console.log('Example app listening on port', app.get('port'));
+  });
+}
