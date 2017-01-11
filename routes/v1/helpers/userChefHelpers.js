@@ -12,13 +12,18 @@ var formatSearch = function(input) {
       result = result.concat('"', array[0], '"');
     } else if (array.length > 1){
       for (let i = 0; i < array.length; i++) {
-        result = result.concat('"', array[i], '"', ',')
+        result = result.concat('"', array[i], '"', ',');
+        // remove trailing comma
+        if (i === array.length - 1) {
+          result = result.slice(0, -1);
+        }
       }
     }
     return `(${result})`;
   }
-
-  return (Array.isArray(input) ? formatArray(input): formatStringArray(input));
+  var result = (Array.isArray(input) ? formatArray(input): formatStringArray(input));
+  console.log('format string result is', result);
+  return result;
 };
 
 var chefSearchQuery = function(queryObj) {
@@ -51,5 +56,5 @@ var chefSearchQuery = function(queryObj) {
 
 module.exports = {
   formatSearch : formatSearch,
-  buildSearchQuery : buildSearchQuery
+  chefSearchQuery : chefSearchQuery
 };
