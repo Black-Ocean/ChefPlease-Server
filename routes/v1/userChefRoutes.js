@@ -16,7 +16,6 @@ module.exports = function(app) {
 
   app.get('/users/:id', function(req, res, next) {
     var id = req.params.id;
-    console.log(id, 'is IDDDD')
     let qString = 'SELECT * FROM users where id=?';
     connection.query(qString, [id], function(err, results) {
       if (err) {
@@ -58,10 +57,11 @@ module.exports = function(app) {
     connection.query(qString, [req.query.cuisine, req.query.location], 
       function(err, chefResults) {
         if (err) {
-            res.sendStatus(500);
+          res.status(500).send('query error');
+        } else {          
+          res.send(helpers.removeDuplicates(chefResults));
         }
         // filter out duplicate chefs
-        res.send(helpers.removeDuplicates(chefResults));
       }
     );
   }); 
@@ -77,7 +77,7 @@ module.exports = function(app) {
     });
   });
 
-  app.post('/chefs', util.isLoggedIn, function(req, res, next) {
+  app.post('/chefs', function(req, res, next) {
     let chef = req.body;
     let qString = 'INSERT INTO chefs (name, bio, id_userID) \
                     VALUES (?, ?, ?)';

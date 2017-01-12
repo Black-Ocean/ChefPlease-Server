@@ -25,9 +25,7 @@ describe('', function() {
 
 
   describe ('Account Creation:', function() {
-    // beforeEach(function (done) {
-    //   connection.query()
-    // })
+
     it('Signup creates a user record and sends back a token', function(done) {
       var options = {
         'method': 'POST',
@@ -72,7 +70,7 @@ describe('', function() {
       };
 
       request(options, function(error, res, body) {
-        expect(res.body).to.be.an('object');
+        expect(res.body).to.equal('A user with that email already exists!');
         done();
       });
     });
@@ -205,7 +203,6 @@ describe('', function() {
         done();
       })
     });
-
     it('gets all events for a specific user', function () {
       var options = {
         'method': 'GET',
@@ -219,12 +216,42 @@ describe('', function() {
         }
         done();
       })
-
     });
-
-    // it('gets all events for a specific chef', function () {
-
-    // }); 
   })
+
+  describe('Adding chefs to database', function () {
+    it('should add a chef and return the id of that new chef', function () {
+      var options = {
+        'method': 'POST',
+        'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
+        'json': {
+          "name" : "Anton",
+          "bio" : "i like golf",
+          "userID": 33,
+          "locations": ["Chicago, San Francisco"],
+          "cuisines": ["Chinese"],
+          "restrictions": ["Dairy", "Peanuts"]
+        }
+      };
+      request(options, function (err, res, body) {
+          expect(res.body).to.equal(6);        
+        done();
+      })      
+    });
+  });  
+
+
+  describe('Getting chefs in a location who meet certain restrictions', function () {
+    it('should return chefs when given a list of restrictions', function () {
+      var options = {
+        'method': 'GET',
+        'uri': 'http://127.0.0.1:3000/chefs/?cuisine=italian&location=San%20Francisco&restrictions=Soy&restrictions=Peanuts',
+      };
+      request(options, function (err, res, body) {
+        expect(res.body).to.be.an('array');        
+        done();
+      })      
+    });
+  });
 
 });
