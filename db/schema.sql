@@ -293,7 +293,7 @@ INSERT INTO `locations` (`city`) VALUES
 INSERT INTO `cuisines` (`cuisine`) VALUES
 ('French'), ('Italian'), ('American'), ('Mexican'), ('Chinese'), ('Japanese'), ('Korean');
 INSERT INTO `restrictions` (`restriction`) VALUES
-('Eggs'), ('Dairy'), ('Peanuts'), ('Tree Nuts'), ('Seafood'), ('Shellfish'), ('Wheat'), ('Soy'), ('Gluten');
+('Eggs'), ('Dairy'), ('Peanuts'), ('Tree Nuts'), ('Seafood'), ('Shellfish'), ('Wheat'), ('Soy'), ('Gluten'), ('Vegetarian'), ('Vegan'), ('Halal'), ('Kosher');
 -- INSERT INTO `chefs_events` (`id`,`id_chefID`,`id_events`,`createdAt`) VALUES
 -- ('','','','');
 -- INSERT INTO `chefs` (`id`,`avgRating`,`bio`,`image`,`id_users`,`createdAt`) VALUES
