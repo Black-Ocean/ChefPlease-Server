@@ -8,7 +8,7 @@ module.exports = function(app) {
     let qString = 'SELECT * FROM users';
     connection.query(qString, function(err, results) {
       if (err) {
-          res.sendStatus(500);
+          res.status(500).send('Database query error during GET to /users');
       } else {
         res.send(results);
       }
@@ -20,7 +20,7 @@ module.exports = function(app) {
     let qString = 'SELECT * FROM users where id=?';
     connection.query(qString, [id], function(err, results) {
       if (err) {
-        res.sendStatus(500);
+        res.status(500).send('Database query error during GET to /users/:id');
       } else {
         res.send(results);        
       }
@@ -34,7 +34,7 @@ module.exports = function(app) {
     connection.query(qString, [user.name, user.bio, userID], 
       function(err, results) {
         if (err) {
-          res.sendStatus(404);
+          res.status(404).send('Database query error during PUT to /users/:id');
         } else {
           res.send(results);
         }
@@ -63,8 +63,9 @@ module.exports = function(app) {
     connection.query(qString, [userId], function (err, results) {
       if (err) {
         res.status(500).send('User not found');
+      } else {
+        res.send(results);
       }
-      res.send(results);      
     });
   });
 
@@ -75,8 +76,7 @@ module.exports = function(app) {
     connection.query(qString, [chef.name, chef.bio, chef.userID],
       function(err, results) {
         if (err) {
-          console.log('ERROR', err);
-          res.sendStatus(500);
+          res.status(500).send('Database query error for POST to /chefs');
         } else {
           // update users table
           let chefID = results.insertId;
@@ -117,9 +117,10 @@ module.exports = function(app) {
     connection.query(qString, [chef.name, chef.bio, chefID],
       function(err, results) {
         if (err) {
-            res.sendStatus(404);
+            res.status(404).send('Database query error for PUT to /chefs');
+        } else {
+          res.send('Chef was updated!');
         }
-        res.send('Chef was updated!');
       }
     );
   });
