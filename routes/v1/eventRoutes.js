@@ -9,9 +9,10 @@ module.exports = function(app) {
       var query = 'SELECT * FROM events';
       connection.query(query, function (err, results) {
         if (err) {
-          res.sendStatus(404).end();
-        } 
-        res.send(results);
+          res.sendStatus(404).send('Database query error during GET to /events');
+        } else {
+          res.send(results);
+        }
       });
     })
     .post(function(req, res, next) {
@@ -28,7 +29,7 @@ module.exports = function(app) {
       connection.query('INSERT INTO events SET ?', [eventDetails], 
         function (err, results) {
           if (err) {
-            res.sendStatus(404).end();
+            res.status(404).send('Database query error during POST to /events');
           } else {
             let eventID = results.insertId;
             // post into chefs_events
@@ -42,11 +43,9 @@ module.exports = function(app) {
             // post into events_dishes
             connection.query(`INSERT INTO
                                 events_dishes (id_eventID, id_dishID, quantities)
-                              VALUES ${helpers.formatEventDishes(eventID, quantities)}`, 
-            function () {
-              res.send(eventID.toString());              
-            });
-          }        
+                              VALUES ${helpers.formatEventDishes(eventID, quantities)}`);
+            res.send(eventID.toString());
+          }
         }
       );
     });
@@ -61,7 +60,7 @@ module.exports = function(app) {
                      WHERE ue.id_events = ?';
       connection.query(qString, [eventId], function(err, results) {
         if (err) {
-          res.sendStatus(500).end();
+          return res.status(500).send('Database query error during GET to /events/:id/users');
         }
         res.send(results);
       })
@@ -77,7 +76,7 @@ module.exports = function(app) {
                     WHERE ue.id_users = ?';
       connection.query(qString, [userId], function(err, results) {
         if (err) {
-          res.sendStatus(500).end();
+          return res.status(500).send('Database query error during GET to /events/users/:id');
         }
         res.send(results);
       });
@@ -93,7 +92,7 @@ module.exports = function(app) {
                     WHERE ce.id_chefID = ?';
       connection.query(qString, [chefId], function(err, results) {
         if (err) {
-          res.sendStatus(500).end();
+          return res.status(500).send('Database query error during GET to /events/chefs/:id');
         }
         res.send(results);
       });
