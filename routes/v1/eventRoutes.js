@@ -29,21 +29,24 @@ module.exports = function(app) {
         function (err, results) {
           if (err) {
             res.sendStatus(404).end();
-          }
-          let eventID = results.insertId;
-          // post into chefs_events
-          connection.query(`INSERT INTO 
-                              chefs_events (id_chefID, id_events) 
-                            VALUES (?, ?)`, [chefID, eventID]);
-          // post into users_events
-          connection.query(`INSERT INTO
-                              users_events (id_users, id_events)
-                            VALUES (?, ?)`, [userID, eventID]);
-          // post into events_dishes
-          connection.query(`INSERT INTO
-                              events_dishes (id_eventID, id_dishID, quantities)
-                            VALUES ${helpers.formatEventDishes(eventID, quantities)}`);
-          res.send(eventID.toString());
+          } else {
+            let eventID = results.insertId;
+            // post into chefs_events
+            connection.query(`INSERT INTO 
+                                chefs_events (id_chefID, id_events) 
+                              VALUES (?, ?)`, [chefID, eventID]);
+            // post into users_events
+            connection.query(`INSERT INTO
+                                users_events (id_users, id_events)
+                              VALUES (?, ?)`, [userID, eventID]);
+            // post into events_dishes
+            connection.query(`INSERT INTO
+                                events_dishes (id_eventID, id_dishID, quantities)
+                              VALUES ${helpers.formatEventDishes(eventID, quantities)}`, 
+            function () {
+              res.send(eventID.toString());              
+            });
+          }        
         }
       );
     });

@@ -6,7 +6,6 @@ module.exports = function(app) {
     .get(function(req, res, next) {
       let chefId = req.params.id;
       let qString = 'SELECT * FROM dishes WHERE id_chefID = ?';
-
       connection.query(qString, [chefId], function(err, results) {
         if (err) {
           next(err)
