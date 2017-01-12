@@ -40,24 +40,13 @@ module.exports = function(app) {
     )
   });
 
-  app.delete('/users/:id', util.isLoggedIn, function(req, res, next) {
-    let userID = req.params.id;
-    let qString = 'DELETE FROM users WHERE id = ?';
-    connection.query(qString, [userID], function(err, results) {
-      if (err) {
-          res.sendStatus(404);
-      }
-      res.send(results);
-    })
-  });
-
   app.get('/chefs', function(req, res, next) {
     let userID = req.headers['user-id'];
     let qString = helpers.chefSearchQuery(req.query);
     connection.query(qString, [req.query.cuisine, req.query.location], 
       function(err, chefResults) {
         if (err) {
-          res.status(500).send('query error');
+          res.status(500).send('Database query error during GET to /chefs');
         } else {          
           res.send(helpers.removeDuplicates(chefResults));
         }
@@ -129,17 +118,5 @@ module.exports = function(app) {
         res.send('Chef was updated!');
       }
     );
-  });
-
-  app.delete('/chefs/:id', util.isLoggedIn, function(req, res, next) {
-    let chef = req.body;
-    let chefID = req.params.id;
-    let qString = 'DELETE FROM chefs WHERE id = ?';
-    connection.query(qString, [chefID], function(err, results) {
-      if (err) {
-        res.sendStatus(404);
-      }
-      res.send(results);
-    });
   });
 }
