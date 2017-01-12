@@ -79,6 +79,7 @@ exports.signUp = function (req, res) {
               if (err) {
                 console.log(err);
               } else {
+                console.log(results.insertId, 'is INSERT ID')
                 let newUser = {id: results.insertId, email: email, md5: hashedEmail, password: hashedPassword};
                 createSession(req, res, newUser);
               }
