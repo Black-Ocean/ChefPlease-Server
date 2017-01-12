@@ -45,6 +45,7 @@ module.exports = function(app) {
   app.get('/chefs', function(req, res, next) {
     let userID = req.headers['user-id'];
     let qString = helpers.chefSearchQuery(req.query);
+    console.log(qString);
     connection.query(qString, [req.query.cuisine, req.query.location], 
       function(err, chefResults) {
         if (err) {

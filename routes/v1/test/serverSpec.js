@@ -278,6 +278,17 @@ describe('', function() {
         done();
       })      
     });
+
+    it('should return an array of chefs if restrictions met', function (done) {
+      var options = {
+        'method': 'GET',
+        'uri': 'http://127.0.0.1:3000/chefs/?cuisine=italian&location=San%20Francisco&restrictions=Soy&restrictions=Peanuts',
+      };
+      request(options, function (err, res, body) {
+        expect(JSON.parse(res.body)).to.not.be.empty;
+        done();
+      })      
+    });    
   });
 
 });
