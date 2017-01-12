@@ -4,8 +4,8 @@ const url = require('url');
 // Formats input into '('ele1', 'ele2', 'ele3', ...)'
 // Used for building post query to /chefs
 var formatSearch = function(input) {
-  let formatStringArray = function(sArray) {
-    return `(${sArray.substring(1, sArray.length - 1)})`;
+  let formatString = function(s) {
+    return `("${s}")`;
   }
 
   let formatArray = function(array) {
@@ -23,7 +23,7 @@ var formatSearch = function(input) {
     }
     return `(${result})`;
   }
-  var result = (Array.isArray(input) ? formatArray(input): formatStringArray(input));
+  var result = (Array.isArray(input) ? formatArray(input): formatString(input));
   return result;
 };
 

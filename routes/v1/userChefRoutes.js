@@ -1,6 +1,7 @@
-var url = require('url');
+const url = require('url');
 const connection = require('../../db/index.js');
 const helpers = require('./helpers/userChefHelpers.js');
+const util = require('./helpers/Auth.js');
 
 module.exports = function(app) {  
   app.get('/users', function(req, res, next) {
@@ -45,15 +46,15 @@ module.exports = function(app) {
     connection.query(qString, [req.query.cuisine, req.query.location], 
       function(err, chefResults) {
         if (err) {
-            res.sendStatus(500);
+          res.status(500).send('Database query error during GET to /chefs');
+        } else {          
+          res.send(helpers.removeDuplicates(chefResults));
         }
         // filter out duplicate chefs
-        res.send(helpers.removeDuplicates(chefResults));
       }
     );
   }); 
 
-  // 
   app.get('/chefs/userId/:userId', function (req, res, next) {
     let userId = req.params.userId;
     let qString = `SELECT * FROM CHEFS where id_userID=?`;
@@ -64,7 +65,6 @@ module.exports = function(app) {
       res.send(results);      
     });
   });
-
 
   app.post('/chefs', function(req, res, next) {
     let chef = req.body;
@@ -115,7 +115,7 @@ module.exports = function(app) {
         if (err) {
             res.sendStatus(404);
         }
-        res.send(results);
+        res.send('Chef was updated!');
       }
     );
   });
