@@ -289,7 +289,7 @@ ALTER TABLE `chefs_events` ADD FOREIGN KEY (id_events) REFERENCES `events` (`id`
 -- INSERT INTO `chefs_locations` (`id`,`id_users`,`id_locations`,`createdAt`) VALUES
 -- ('','','','');
 INSERT INTO `locations` (`city`) VALUES
-('San Francisco'), ('Los Angeles'), ('New York City'), ('Chicago');
+('San Francisco, CA, USA'), ('Los Angeles, CA, USA'), ('New York City, NY, USA'), ('Chicago, IL, USA');
 INSERT INTO `cuisines` (`cuisine`) VALUES
 ('French'), ('Italian'), ('American'), ('Mexican'), ('Chinese'), ('Japanese'), ('Korean');
 INSERT INTO `restrictions` (`restriction`) VALUES
