@@ -6,9 +6,10 @@ module.exports = function(app) {
     let qString = 'SELECT * FROM locations';
     connection.query(qString, function(err, results) {
       if (err) {
-        res.sendStatus(500);
+        res.status(500).send('Database query error in GET to /locations');
+      } else {
+        res.send(results);
       }
-      res.send(results);
     });
   });
 
@@ -16,9 +17,10 @@ module.exports = function(app) {
     let qString = 'SELECT * FROM cuisines';
     connection.query(qString, function(err, results) {
       if (err) {
-        res.sendStatus(500);
+        res.status(500).send('Database query error in GET to /cuisines');
+      } else {
+        res.send(results);
       }
-      res.send(results);
     });
   });
 
@@ -26,9 +28,10 @@ module.exports = function(app) {
     let qString = 'SELECT * FROM restrictions';
     connection.query(qString, function(err, results) {
       if (err) {
-        res.sendStatus(500);
+        res.status(500).send('Database query error in GET to /restrictions');
+      } else {
+        res.send(results);
       }
-      res.send(results);
     });
   });
 }
