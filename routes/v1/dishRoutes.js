@@ -22,7 +22,7 @@ module.exports = function(app) {
         [name, text, image, parseInt(price), chefId],
         function(err, results) {
           if (err) {
-            res.sendStatus(500);
+            res.status(500).send('Database query error in POST to /dishes/chefs/:id');
           } else {
             res.send(results.insertId.toString());
           }
@@ -42,12 +42,12 @@ module.exports = function(app) {
         [dish.name, dish.text, dish.image, parseInt(dish.price), dishId],
         function(err, results) {
           if (err) {
-            res.sendStatus(500);
+            res.status(500).send('Database query error in PUT to /dishes/:dishId');
+          } else {
+            res.sendStatus(200);
           }
-          res.sendStatus(200);
         }
       );
-      res.end(insertId);
     })
     .delete(function(req, res, next) {
       let dish = req.body;
@@ -56,10 +56,11 @@ module.exports = function(app) {
       connection.query(qString,
         [dishId],
         function(err, results) {
-          if(err) {
-            res.sendStatus(500);
+          if (err) {
+            res.status(500).send('Database query error in DELETE to /dishes/:dishId');
+          } else {
+            res.sendStatus(202);
           }
-          res.sendStatus(202);
         }
       );
     });

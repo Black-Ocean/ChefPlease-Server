@@ -289,11 +289,11 @@ ALTER TABLE `chefs_events` ADD FOREIGN KEY (id_events) REFERENCES `events` (`id`
 -- INSERT INTO `chefs_locations` (`id`,`id_users`,`id_locations`,`createdAt`) VALUES
 -- ('','','','');
 INSERT INTO `locations` (`city`) VALUES
-('San Francisco'), ('Los Angeles'), ('New York City'), ('Chicago');
+('San Francisco, CA, USA'), ('Los Angeles, CA, USA'), ('New York City, NY, USA'), ('Chicago, IL, USA');
 INSERT INTO `cuisines` (`cuisine`) VALUES
 ('French'), ('Italian'), ('American'), ('Mexican'), ('Chinese'), ('Japanese'), ('Korean');
 INSERT INTO `restrictions` (`restriction`) VALUES
-('Eggs'), ('Dairy'), ('Peanuts'), ('Tree Nuts'), ('Seafood'), ('Shellfish'), ('Wheat'), ('Soy'), ('Gluten');
+('Eggs'), ('Dairy'), ('Peanuts'), ('Tree Nuts'), ('Seafood'), ('Shellfish'), ('Wheat'), ('Soy'), ('Gluten'), ('Vegetarian'), ('Vegan'), ('Halal'), ('Kosher');
 -- INSERT INTO `chefs_events` (`id`,`id_chefID`,`id_events`,`createdAt`) VALUES
 -- ('','','','');
 -- INSERT INTO `chefs` (`id`,`avgRating`,`bio`,`image`,`id_users`,`createdAt`) VALUES

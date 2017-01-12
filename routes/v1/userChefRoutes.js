@@ -8,9 +8,10 @@ module.exports = function(app) {
     let qString = 'SELECT * FROM users';
     connection.query(qString, function(err, results) {
       if (err) {
-          res.sendStatus(500);
+          res.status(500).send('Database query error during GET to /users');
+      } else {
+        res.send(results);
       }
-      res.send(results);
     });
   });  
 
@@ -19,7 +20,7 @@ module.exports = function(app) {
     let qString = 'SELECT * FROM users where id=?';
     connection.query(qString, [id], function(err, results) {
       if (err) {
-        res.sendStatus(500);
+        res.status(500).send('Database query error during GET to /users/:id');
       } else {
         res.send(results);        
       }
@@ -33,9 +34,10 @@ module.exports = function(app) {
     connection.query(qString, [user.name, user.bio, userID], 
       function(err, results) {
         if (err) {
-          res.sendStatus(404);
+          res.status(404).send('Database query error during PUT to /users/:id');
+        } else {
+          res.send(results);
         }
-        res.send(results);
       }
     )
   });
@@ -61,8 +63,9 @@ module.exports = function(app) {
     connection.query(qString, [userId], function (err, results) {
       if (err) {
         res.status(500).send('User not found');
+      } else {
+        res.send(results);
       }
-      res.send(results);      
     });
   });
 
@@ -73,35 +76,36 @@ module.exports = function(app) {
     connection.query(qString, [chef.name, chef.bio, chef.userID],
       function(err, results) {
         if (err) {
-          res.sendStatus(500);
+          res.status(500).send('Database query error for POST to /chefs');
+        } else {
+          // update users table
+          let chefID = results.insertId;
+          let qString = 'UPDATE users SET chefID = ? WHERE id = ?';
+          connection.query(qString, [chefID, chef.userID], function(err, results) {
+            if (err) {
+              res.sendStatus(404);
+            }
+            // add chefs locations
+            connection.query(`INSERT INTO chefs_locations (id_chefID, id_locationID) \
+                              SELECT ?, id FROM locations \
+                              WHERE city IN ${helpers.formatSearch(chef.locations)}`,
+                              [chefID]);
+            // add chefs cuisines
+            connection.query(`INSERT INTO chefs_cuisines (id_chefID, id_cuisineID) \
+                              SELECT ?, id FROM cuisines \
+                              WHERE cuisine IN ${helpers.formatSearch(chef.cuisines)}`,
+                              [chefID]);
+
+            // add chefs restrictions
+            connection.query(`INSERT INTO chefs_restrictions (id_chefID, id_restrictionID) \
+                              SELECT ?, id FROM restrictions \
+                              WHERE restriction IN ${helpers.formatSearch(chef.restrictions)}`,
+                              [chefID]);
+
+            // return id in chefs table for the new chef
+            res.send(chefID.toString());
+          });
         }
-        // update users table
-        let chefID = results.insertId;
-        let qString = 'UPDATE users SET chefID = ? WHERE id = ?';
-        connection.query(qString, [chefID, chef.userID], function(err, results) {
-          if (err) {
-            res.sendStatus(404);
-          }
-          // add chefs locations
-          connection.query(`INSERT INTO chefs_locations (id_chefID, id_locationID) \
-                            SELECT ?, id FROM locations \
-                            WHERE city IN ${helpers.formatSearch(chef.locations)}`,
-                            [chefID]);
-          // add chefs cuisines
-          connection.query(`INSERT INTO chefs_cuisines (id_chefID, id_cuisineID) \
-                            SELECT ?, id FROM cuisines \
-                            WHERE cuisine IN ${helpers.formatSearch(chef.cuisines)}`,
-                            [chefID]);
-
-          // add chefs restrictions
-          connection.query(`INSERT INTO chefs_restrictions (id_chefID, id_restrictionID) \
-                            SELECT ?, id FROM restrictions \
-                            WHERE restriction IN ${helpers.formatSearch(chef.restrictions)}`,
-                            [chefID]);
-
-          // return id in chefs table for the new chef
-          res.send(chefID.toString());
-        });
       }
     );
   });
@@ -113,9 +117,10 @@ module.exports = function(app) {
     connection.query(qString, [chef.name, chef.bio, chefID],
       function(err, results) {
         if (err) {
-            res.sendStatus(404);
+            res.status(404).send('Database query error for PUT to /chefs');
+        } else {
+          res.send('Chef was updated!');
         }
-        res.send('Chef was updated!');
       }
     );
   });
