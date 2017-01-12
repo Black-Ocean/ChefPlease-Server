@@ -7,27 +7,26 @@ module.exports = function(app) {
       let chefId = req.params.id;
       let qString = 'SELECT * FROM dishes WHERE id_chefID = ?';
 
-      connection.query(qString, [chefID], function(err, results) {
-        if(err) {
-          console.log(err);
+      connection.query(qString, [chefId], function(err, results) {
+        if (err) {
+          next(err)
+        } else {
+          res.send(results);
         }
-        res.send(results);
       });
     })
     .post(function(req, res, next) {
-      let dish = req.body;
       let chefId = req.params.id;
-      let qString = 'INSERT INTO dishes \
-                      (name, text, image, price, id_chefID) \
-                    VALUES (?, ?, ?, ?, ?)';
-
+      let {name, text, image, price, restrictions, cuisine} = req.body
+      let qString = 'INSERT INTO dishes (name, text, image, price, id_chefID) VALUES (?, ?, ?, ?, ?)'
       connection.query(qString, 
-        [dish.name, dish.text, dish.image, parseInt(dish.price), chefId],
+        [name, text, image, parseInt(price), chefId],
         function(err, results) {
           if (err) {
             res.sendStatus(500);
+          } else {
+            res.send(results.insertId.toString());
           }
-          res.send(results.insertId.toString());
         }
       );
     });

@@ -8,16 +8,18 @@ const md5 = require('md5');
 
 // Middleware to protect view in the app
 exports.isLoggedIn = function (req, res, next) {
-  let AuthToken = req.headers.AuthToken;
+  let AuthToken = req.headers.authtoken;
   let query = 'Select * FROM tokens WHERE tokens.token=?'
   connection.query(query, [AuthToken], function (err, results) {
-    // if the user in the database is found, 
-    if (results.length < 1) {
-      // if the user is not logged in, redirect the client to login page
-      res.redirect('/login');
+    if (err) {
+      res.status(500).send('Database query error during login');
     } else {
-      next();
-    };
+      if (results.length < 1) {
+        res.status(500).send('Not logged in');
+      } else {
+        next();
+      };
+    }
   });
 };
 
@@ -50,7 +52,6 @@ const createSession = function (req, res, newUser) {
     [token, newUser.email],
     function (err, results) {
       if (err) {console.log(err)}
-      console.log(results);
     }
   );
   res.status(201).send(req.session);
@@ -63,9 +64,8 @@ exports.signUp = function (req, res) {
   connection.query('SELECT * from users WHERE email=?', [email], 
     function (err, results) {
       if (err) {
-        res.send(err);
-      }
-      if (results && results.length) {
+        res.status(500).send('Database query error during signup');
+      } else if (results && results.length) {
         res.status(400).send("A user with that email already exists!");
       } else {
         //create new user
@@ -73,7 +73,6 @@ exports.signUp = function (req, res) {
         bcrypt.hash(password, null, null, function(err, hashedPassword) {
           let newUser = 'INSERT INTO users (name, bio, email, password, md5) VALUES (?, ?, ?, ?, ?)';
           // Store hash in your password DB.
-          // email = email || '';
           let hashedEmail = md5(email);  
           connection.query(newUser, [name, bio, email, hashedPassword, hashedEmail],
             function (err, results) {
@@ -112,18 +111,16 @@ exports.login = function (req, res) {
             result: 'Password does not match email'
           });
         }
-      });
-        
+      });        
       }
     }
   );
 }
 
 exports.logOut = function (req,res) {
-  let AuthToken = req.headers.AuthToken;
+  let AuthToken = req.headers.authtoken;
   let query = 'DELETE FROM tokens WHERE tokens.token=?'
   connection.query(query, [AuthToken], function (err, result) {
-    // res.redirect('/login');
     res.status(200).send('User Token has been deleted')
   });
 };
