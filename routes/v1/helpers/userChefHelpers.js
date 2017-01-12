@@ -1,9 +1,5 @@
 const url = require('url');
 
-<<<<<<< HEAD
-var chefSearchQuery = function(queryObj) {
-  // let { cuisine, location, restriction } = queryObj;
-=======
 // formatSearch:
 // Formats input into '('ele1', 'ele2', 'ele3', ...)'
 // Used for building post query to /chefs
@@ -11,7 +7,6 @@ var formatSearch = function(input) {
   let formatStringArray = function(sArray) {
     return `(${sArray.substring(1, sArray.length - 1)})`;
   }
->>>>>>> 58bde3195eaf7bccc6a808d17df1444044c82ab9
 
   let formatArray = function(array) {
     let result = '';
@@ -89,10 +84,6 @@ var removeDuplicates = function(response) {
 
 module.exports = {
   formatSearch : formatSearch,
-<<<<<<< HEAD
-  chefSearchQuery : chefSearchQuery
-=======
   chefSearchQuery : chefSearchQuery,
   removeDuplicates: removeDuplicates
->>>>>>> 58bde3195eaf7bccc6a808d17df1444044c82ab9
 };
