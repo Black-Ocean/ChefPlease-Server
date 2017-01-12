@@ -47,7 +47,6 @@ module.exports = function(app) {
           res.sendStatus(200);
         }
       );
-      res.end(insertId);
     })
     .delete(function(req, res, next) {
       let dish = req.body;
