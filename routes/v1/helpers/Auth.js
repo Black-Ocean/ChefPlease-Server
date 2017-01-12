@@ -11,13 +11,15 @@ exports.isLoggedIn = function (req, res, next) {
   let AuthToken = req.headers.authtoken;
   let query = 'Select * FROM tokens WHERE tokens.token=?'
   connection.query(query, [AuthToken], function (err, results) {
-    // if the user in the database is found,
-    console.log(err);
-    if (results.length < 1) {
-      res.status(500).send('Not logged in');
+    if (err) {
+      res.status(500).send('Database query error during login');
     } else {
-      next();
-    };
+      if (results.length < 1) {
+        res.status(500).send('Not logged in');
+      } else {
+        next();
+      };
+    }
   });
 };
 
@@ -58,14 +60,12 @@ const createSession = function (req, res, newUser) {
 
 
 exports.signUp = function (req, res) {
-  console.log(req.body);
   let {name, bio, email, password} = req.body;
   connection.query('SELECT * from users WHERE email=?', [email], 
     function (err, results) {
       if (err) {
-        return res.send(err);
-      }
-      if (results && results.length) {
+        res.status(500).send('Database query error during signup');
+      } else if (results && results.length) {
         res.status(400).send("A user with that email already exists!");
       } else {
         //create new user
@@ -79,7 +79,6 @@ exports.signUp = function (req, res) {
               if (err) {
                 console.log(err);
               } else {
-                console.log(results.insertId, 'is INSERT ID')
                 let newUser = {id: results.insertId, email: email, md5: hashedEmail, password: hashedPassword};
                 createSession(req, res, newUser);
               }
@@ -112,8 +111,7 @@ exports.login = function (req, res) {
             result: 'Password does not match email'
           });
         }
-      });
-        
+      });        
       }
     }
   );

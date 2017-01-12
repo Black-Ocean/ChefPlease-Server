@@ -99,7 +99,7 @@ describe('', function() {
   // }); // 'Account Login'
 
   describe ('Account Logout:', function () {
-    it ('Logs out users and destroys the token in database', function () {
+    it ('Logs out users and destroys the token in database', function (done) {
       var options = {
         'method': 'GET',
         'uri': 'http://127.0.0.1:3000/logout',
@@ -109,7 +109,7 @@ describe('', function() {
         }
       };
       request(options, function(error, res, body) {
-       expect(res.headers.location).to.equal('/login');
+       expect(res.body).to.equal('User Token has been deleted');
        done();
       });
 
@@ -118,10 +118,10 @@ describe('', function() {
 
 
   describe ('Creating dishes for chefs', function () {
-    it ('creates a new dish for a chef', function () {
+    it ('creates a new dish for a chef', function (done) {
       var options = {
         'method': 'POST',
-        'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
+        'uri': 'http://127.0.0.1:3000/dishes/chefs/2',
         'json': {
           'name': 'Pasta',
           'text': 'It is delicious',
@@ -132,19 +132,19 @@ describe('', function() {
         }
       };
       request(options, function(error, res, body) {
-        expect(res.body).to.equal('Dish was created!!');
+        expect(res.body).to.be.a('number');
         done();
       });
 
     })
 
-    it ('gets all dishes for a particular chef ', function () {
+    it ('gets all dishes for a particular chef ', function (done) {
       var options = {
         'method': 'GET',
         'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
       };
       request(options, function(error, res, body) {
-        expect(res.body).to.be.an('object');
+        expect(JSON.parse(res.body)).to.not.be.empty;
         done();
       });
 
@@ -152,8 +152,8 @@ describe('', function() {
   });
 
 
-  describe ('Updating a chefs information', function () {
-    it ('creates a new dish for a chef', function () {
+  describe ('Working with chefs allows you to', function () {
+    it ('create a new dish for a chef', function (done) {
       var options = {
         'method': 'PUT',
         'uri': 'http://127.0.0.1:3000/chefs/1',
@@ -171,13 +171,13 @@ describe('', function() {
 
     })
 
-    it ('gets all dishes for a particular chef ', function () {
+    it ('get dishes for a particular chef ', function (done) {
       var options = {
         'method': 'GET',
         'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
       };
       request(options, function(error, res, body) {
-        expect(res.body).to.be.an('object');
+        expect(JSON.parse(res.body)).to.not.be.empty;
         done();
       });
 
@@ -185,7 +185,7 @@ describe('', function() {
   });
 
   describe('Events', function () {
-    it ('allows users to create an event', function () {
+    it ('allows users to create an event', function (done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
@@ -203,7 +203,7 @@ describe('', function() {
         done();
       })
     });
-    it('gets all events for a specific user', function () {
+    it('gets all events for a specific user', function (done) {
       var options = {
         'method': 'GET',
         'uri': 'http://127.0.0.1:3000/events/users/1',
@@ -220,7 +220,7 @@ describe('', function() {
   })
 
   describe('Adding chefs to database', function () {
-    it('should add a chef and return the id of that new chef', function () {
+    it('should add a chef and return the id of that new chef', function (done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
@@ -242,13 +242,13 @@ describe('', function() {
 
 
   describe('Getting chefs in a location who meet certain restrictions', function () {
-    it('should return chefs when given a list of restrictions', function () {
+    it('should return an empty array if no chefs meet the criteria', function (done) {
       var options = {
         'method': 'GET',
         'uri': 'http://127.0.0.1:3000/chefs/?cuisine=italian&location=San%20Francisco&restrictions=Soy&restrictions=Peanuts',
       };
       request(options, function (err, res, body) {
-        expect(res.body).to.be.an('array');        
+        expect(res.body).to.be.empty;
         done();
       })      
     });
