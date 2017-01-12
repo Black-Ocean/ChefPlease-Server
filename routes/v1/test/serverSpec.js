@@ -183,61 +183,87 @@ describe('', function() {
 
     })
   });
+  //CREATING EVENTS
 
+    // it ('are created in a POST request to /dishes/chefs/:id', function (done) {
+    //   var options = {
+    //     'method': 'POST',
+    //     'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
+    //     'json': {
+    //       'name': 'social night',
+    //       'time': '1000-01-01 00:00:00',
+    //       'location': 'Hack Reactor',
+    //       'chefID': 1,
+    //       'userID': 29,
+    //       'quantities': 2
+    //     }
+    //   };
+    //   request(options, function (err, res, body) {
+    //     expect(res.body).to.be.a('object')
+    //     done();
+    //   })
+    // });
   describe('Events', function () {
-    it ('allows users to create an event', function (done) {
+    it('are created by the user, the response will be the eventId', function (done) {
       var options = {
         'method': 'POST',
-        'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
-        'json': {
-          'name': 'social night',
-          'time': '1000-01-01 00:00:00',
-          'location': 'Hack Reactor',
-          'chefID': 1,
-          'userID': 29,
-          'quantities': 2
-        }
-      };
+        'uri': 'http://127.0.0.1:3000/events/',
+          'json': {
+            "name": "NPM TalkING",
+            "time": "1000-01-01 00:00:00",
+            "location": "San Francisco",
+            "text": "Really fun stuff",
+            "userId": "27",
+            "chefId": "2",
+            "quantity": "3"
+          }
+      };  
       request(options, function (err, res, body) {
-        expect(res.body).to.be.a('object')
-        done();
-      })
+        expect(JSON.parse(res.body)).to.be.a('number');
+        done()
+      });      
     });
-    it('gets all events for a specific user', function (done) {
+    it('will be an empty array if a user has no events', function (done) {
       var options = {
         'method': 'GET',
         'uri': 'http://127.0.0.1:3000/events/users/1',
       };
       request(options, function (err, res, body) {
-        if (err) {
-          console.log(err)
-        } else {
-          expect(res.body).to.equal('this test should fail!!');        
-        }
+        expect(JSON.parse(res.body)).to.deep.equal([]);//        
         done();
       })
     });
   })
 
-  describe('Adding chefs to database', function () {
-    it('should add a chef and return the id of that new chef', function (done) {
+  describe('Dishes for a chef:', function () {
+    it('POST should write to the DB and return the dishId ', function (done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
         'json': {
-          "name" : "Anton",
-          "bio" : "i like golf",
-          "userID": 33,
-          "locations": ["Chicago, San Francisco"],
-          "cuisines": ["Chinese"],
-          "restrictions": ["Dairy", "Peanuts"]
+          "name" : "steak",
+          "text" : "medium-rare",
+          "image": "image-url",
+          "price": "10"
         }
       };
       request(options, function (err, res, body) {
-          expect(res.body).to.equal(6);        
+        expect(JSON.parse(res.body)).to.be.a('number');        
         done();
       })      
     });
+
+    it('GET should return all dishes for a chef ', function (done) {
+      var options = {
+        'method': 'GET',
+        'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
+      };
+      request(options, function (err, res, body) {
+        expect(JSON.parse(res.body)).to.not.be.empty;        
+        done();
+      })      
+    });
+
   });  
 
 
@@ -248,7 +274,7 @@ describe('', function() {
         'uri': 'http://127.0.0.1:3000/chefs/?cuisine=italian&location=San%20Francisco&restrictions=Soy&restrictions=Peanuts',
       };
       request(options, function (err, res, body) {
-        expect(res.body).to.be.empty;
+        expect(JSON.parse(res.body)).to.be.empty;
         done();
       })      
     });
