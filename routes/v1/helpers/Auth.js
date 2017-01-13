@@ -2,6 +2,7 @@
 const bcrypt = require('bcrypt-nodejs');
 const connection = require('../../../db/index');
 const utils = require('./utility')
+const md5 = require('md5');
 
 //middleware for users FIGURE OUT WHERE THIS GOES
 exports.isOwnProfile = function (req) {
