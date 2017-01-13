@@ -3,24 +3,6 @@ const bcrypt = require('bcrypt-nodejs');
 const connection = require('../../../db/index');
 const utils = require('./utility')
 
-// Middleware to protect view in the app
-exports.isLoggedIn = function (req, res, next) {
-  let AuthToken = req.headers.authtoken;
-  let query = 'Select * FROM tokens WHERE tokens.token=?'
-  connection.query(query, [AuthToken], function (err, results) {
-    if (err) {
-      res.status(500).send('Database query error during login');
-    } else {
-      if (results.length < 1) {
-        res.status(500).send('Not logged in');
-      } else {
-        next();
-      };
-    }
-  });
-};
-
-
 //middleware for users FIGURE OUT WHERE THIS GOES
 exports.isOwnProfile = function (req) {
   return req.headers.isOwnProfile ? true : false;
@@ -66,8 +48,6 @@ exports.signUp = function (req, res) {
         } else if (results && results.length) {
           res.status(400).send("A user with that email already exists!");
         } else {
-          //create new user
-          // let user = JSON.parse(JSON.stringify(results))[0];
           bcrypt.hash(password, null, null, function(err, hashedPassword) {
             let newUser = 'INSERT INTO users (name, bio, email, password, md5) VALUES (?, ?, ?, ?, ?)';
             // Store hash in your password DB.

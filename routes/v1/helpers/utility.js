@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const _ = require('lodash'); 
 const config = require('./config');
+const connection = require('../../../db/index');
 
 
 exports.validateEmail = (email) => {
@@ -21,3 +22,20 @@ exports.isAChef = function (req, res, next) {
 /************************************************************/
 // Add additional middleware functions below
 /************************************************************/
+
+
+exports.isLoggedIn = function (req, res, next) {
+  let AuthToken = req.headers.authtoken;
+  let query = 'Select * FROM tokens WHERE tokens.token=?'
+  connection.query(query, [AuthToken], function (err, results) {
+    if (err) {
+      res.status(500).send('Database query error during login');
+    } else {      
+      if (results.length < 1) {
+        res.status(500).send('Not logged in');
+      } else {
+        next();
+      };
+    }
+  });
+};
