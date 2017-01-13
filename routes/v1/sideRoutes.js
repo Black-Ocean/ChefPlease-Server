@@ -1,5 +1,6 @@
 var url = require('url');
 const connection = require('../../db/index.js');
+const utils = require('./helpers/utility.js');
 
 module.exports = function(app) {
   app.get('/locations', function(req, res, next) {
@@ -8,7 +9,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('Database query error in GET to /locations');
       } else {
-        res.send(results);
+        res.send(utils.filterSingle(results));
       }
     });
   });
@@ -19,7 +20,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('Database query error in GET to /cuisines');
       } else {
-        res.send(results);
+        res.send(utils.filterSingle(results));
       }
     });
   });
@@ -30,7 +31,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('Database query error in GET to /restrictions');
       } else {
-        res.send(results);
+        res.send(utils.filterSingle(results));
       }
     });
   });
