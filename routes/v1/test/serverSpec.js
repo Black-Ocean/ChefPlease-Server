@@ -1,21 +1,23 @@
 var expect = require('chai').expect;
 var should = require('chai').should;
-var request = require('request');
+var Promise = require('bluebird');
+var request = Promise.promisify(require('request'));
 var util = require('../helpers/Auth')
 
 const connection = require('../../../db/index');
 
 let localServer = 'http://127.0.0.1:3000';
 let deployedServer;
+
+const dbURL = 'http://127.0.0.1:3000';
+
 /************************************************************/
 // Mocha doesn't have a way to designate pending before blocks.
 // Mimic the behavior of xit and xdescribe with xbeforeEach.
 // Remove the 'x' from beforeEach block when working on
 // authentication tests.
 /************************************************************/
-var xbeforeEach = function() {};
 /************************************************************/
-
 
 describe('', function() {
   describe ('Account Creation:', function() {
@@ -38,7 +40,8 @@ describe('', function() {
         'method': 'POST',
         'uri': localServer + '/signup',
         'json': {
-          'email': 'zack@gmail.com',
+          'name': 'zdos',
+          'email': 'zdos@gmail.com',
           'password': 'cake1'
         }
       };
@@ -81,46 +84,43 @@ describe('', function() {
         done();
       });
     });
-
-  }); // 'Account Creation'
-
-
+  }); 
+  
+  // 'Account Login'
   describe ('Account Login:', function() {
+    it ('Sends back a 401 if user tries to login with invalid credentials', function (done) {    
+      var options = {    
+        'method': 'POST',    
+        'uri': localServer + '/login',   
+        'json': {    
+          'email': 'JohnSmith@gmail.com',    
+          'password': 'JohnSmith'    
+        }    
+      };   
+      request(options, function(error, res, body) {    
+        expect(body).to.equal('Invalid email or password');    
+        done();    
+      });    
+    })   
+ 
+    it(' Should send back the chef ID if the user is a chef', function(done) {   
+      var options = {    
+        'method': 'POST',    
+        'uri': localServer + '/login',   
+        'json': {    
+          'email': 'martha@gmail.com',   
+          'password': 'martha'   
+        }    
+      };   
+ 
+      request(options, function(error, res, body) {    
+        expect(body.chefId).to.be.a('number');   
+        done();    
+      });    
+    });     
+  }); 
 
-
-    it ('Sends back a 401 if user tries to login with invalid credentials', function (done) {
-      var options = {
-        'method': 'POST',
-        'uri': localServer + '/login',
-        'json': {
-          'email': 'JohnSmith@gmail.com',
-          'password': 'JohnSmith'
-        }
-      };
-      request(options, function(error, res, body) {
-        expect(body).to.equal('Invalid email or password');
-        done();
-      });
-    })
-
-    it(' Should send back the chef ID if the user is a chef', function(done) {
-      var options = {
-        'method': 'POST',
-        'uri': localServer + '/login',
-        'json': {
-          'email': 'martha@gmail.com',
-          'password': 'martha'
-        }
-      };
-
-      request(options, function(error, res, body) {
-        expect(body.chefId).to.be.a('number');
-        done();
-      });
-    }); 
-
-  }); // 'Account Login'
-
+  // 'Account Creation'
   describe ('Account Logout:', function () {
     it ('Logs out users and destroys the token in database', function (done) {
       var options = {
@@ -135,7 +135,6 @@ describe('', function() {
        expect(res.body).to.equal('User Token has been deleted');
        done();
       });
-
     }); 
   }); 
 
