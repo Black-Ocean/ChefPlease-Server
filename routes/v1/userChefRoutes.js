@@ -73,7 +73,6 @@ module.exports = function(app) {
     let chef = req.body;
     let qString = 'INSERT INTO chefs (name, bio, id_userID) \
                     VALUES (?, ?, ?)';
-    console.log(chef.name, chef.bio, chef.userID);                    
     connection.query(qString, [chef.name, chef.bio, chef.userID],
       function(err, results) {
         if (err) {
