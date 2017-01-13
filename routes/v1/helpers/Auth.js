@@ -1,10 +1,6 @@
 // Auth Service with Token Based Authentication
 const bcrypt = require('bcrypt-nodejs');
 const connection = require('../../../db/index');
-const jwt = require('jsonwebtoken');
-const _ = require('lodash'); 
-const config = require('./config');
-const md5 = require('md5');
 const utils = require('./utility')
 
 // Middleware to protect view in the app
@@ -32,7 +28,7 @@ exports.isOwnProfile = function (req) {
 
 //Creates a session, sends user to home page and sends them back a token
 const createSession = function (req, res, newUser) {
-  let token = exports.createJSONWebToken(newUser);
+  let token = utils.createJSONWebToken(newUser);
   let userId = newUser.id
   req.session = {
     id: newUser.id,
