@@ -1,5 +1,6 @@
 var url = require('url');
 const connection = require('../../db/index');
+const utils = require('./helpers/utility.js');
 const helpers = require('./helpers/eventHelpers.js');
 
 module.exports = function(app) {
@@ -11,7 +12,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(404).send('Database query error during GET to /events');
         } else {
-          res.send(results);
+          res.send(utils.filterSingle(results));
         }
       });
     })
@@ -62,7 +63,7 @@ module.exports = function(app) {
         if (err) {
           return res.status(500).send('Database query error during GET to /events/:id/users');
         }
-        res.send(results);
+        res.send(utils.filterSingle(results));
       })
     });
 
@@ -78,7 +79,7 @@ module.exports = function(app) {
         if (err) {
           return res.status(500).send('Database query error during GET to /events/users/:id');
         }
-        res.send(results);
+        res.send(utils.filterSingle(results));
       });
     });
 
@@ -94,8 +95,7 @@ module.exports = function(app) {
         if (err) {
           return res.status(500).send('Database query error during GET to /events/chefs/:id');
         }
-        res.send(results);
+        res.send(utils.filterSingle(results));
       });
     });
-    
 }

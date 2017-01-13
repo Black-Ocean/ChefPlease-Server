@@ -1,5 +1,6 @@
 var url = require('url');
 const connection = require('../../db/index.js');
+const utils = require('./helpers/utility.js');
 
 module.exports = function(app) {
   app.route('/dishes/chefs/:id')
@@ -10,7 +11,7 @@ module.exports = function(app) {
         if (err) {
           next(err)
         } else {
-          res.send(results);
+          res.send(utils.filterSingle(results));
         }
       });
     })
