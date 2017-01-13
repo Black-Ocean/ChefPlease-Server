@@ -85,6 +85,40 @@ describe('', function() {
       });
     });
   }); 
+  
+  // 'Account Login'
+  describe ('Account Login:', function() {
+    it ('Sends back a 401 if user tries to login with invalid credentials', function (done) {    
+      var options = {    
+        'method': 'POST',    
+        'uri': localServer + '/login',   
+        'json': {    
+          'email': 'JohnSmith@gmail.com',    
+          'password': 'JohnSmith'    
+        }    
+      };   
+      request(options, function(error, res, body) {    
+        expect(body).to.equal('Invalid email or password');    
+        done();    
+      });    
+    })   
+ 
+    it(' Should send back the chef ID if the user is a chef', function(done) {   
+      var options = {    
+        'method': 'POST',    
+        'uri': localServer + '/login',   
+        'json': {    
+          'email': 'martha@gmail.com',   
+          'password': 'martha'   
+        }    
+      };   
+ 
+      request(options, function(error, res, body) {    
+        expect(body.chefId).to.be.a('number');   
+        done();    
+      });    
+    });     
+  }); 
 
   // 'Account Creation'
   describe ('Account Logout:', function () {
