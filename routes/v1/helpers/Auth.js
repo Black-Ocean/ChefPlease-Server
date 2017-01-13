@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash'); 
 const config = require('./config');
 const md5 = require('md5');
+const utils = require('./utility')
 
 // Middleware to protect view in the app
 exports.isLoggedIn = function (req, res, next) {
@@ -23,12 +24,8 @@ exports.isLoggedIn = function (req, res, next) {
   });
 };
 
-const validateEmail = (email) => {
-    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
-};
 
-// //middleware for users FIGURE OUT WHERE THIS GOES
+//middleware for users FIGURE OUT WHERE THIS GOES
 exports.isOwnProfile = function (req) {
   return req.headers.isOwnProfile ? true : false;
 };
@@ -37,38 +34,37 @@ exports.isAChef = function (req, res, next) {
   return req.headers.isAChef ? true : false;
 };
 
-//creates a web token given in an object with a username
-const createToken = (user) => {
-  // Remove the pass word, then create the token that will expire in 1 month
-  return jwt.sign(_.omit(user, 'password'), config.secret, { expiresIn: 60*60*5 });
-};
-
-
 //Creates a session, sends user to home page and sends them back a token
 const createSession = function (req, res, newUser) {
-  let token = createToken(newUser);
+  let token = exports.createJSONWebToken(newUser);
+  let userId = newUser.id
   req.session = {
     id: newUser.id,
-    AuthToken: token,
-    //FIND CHEFID LET IT BE NULL OR CHEF ID;
+    AuthToken: token
   };
   connection.query(
     'INSERT INTO tokens (token, id_userID) VALUES (?, (SELECT users.id FROM users WHERE users.email=?))',
     [token, newUser.email],
     function (err, results) {
-      if (err) {console.log(err)}
+      if (err) {console.log(err)
+      } else {
+        connection.query(`SELECT id FROM chefs where id_userID=${userId}`, function (err, results) {
+          if (err) {
+            res.status(500).send('Database error when looking for userId');
+          } else {
+            req.session.chefId = results[0] ? results[0].id : null;
+            res.status(201).send(req.session);
+          }
+        });
+      }
     }
   );
-  res.status(201).send(req.session);
 };
-
-
 
 exports.signUp = function (req, res) {
   let {name, bio, email, password} = req.body;
-  console.log(email, 'about to be validated')
-  if(validateEmail(email) === false) {
-    console.log('INSIDE FALSE')
+
+  if(utils.validateEmail(email) === false) {
     res.status(422).send('Email input is not valid');
   } else {
     connection.query('SELECT * from users WHERE email=?', [email], 
