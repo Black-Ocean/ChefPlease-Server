@@ -30,10 +30,6 @@ exports.isOwnProfile = function (req) {
   return req.headers.isOwnProfile ? true : false;
 };
 
-exports.isAChef = function (req, res, next) {
-  return req.headers.isAChef ? true : false;
-};
-
 //Creates a session, sends user to home page and sends them back a token
 const createSession = function (req, res, newUser) {
   let token = exports.createJSONWebToken(newUser);
