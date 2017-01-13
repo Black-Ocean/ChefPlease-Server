@@ -24,7 +24,6 @@ module.exports = function(app) {
           if (err) {
             res.status(500).send('Database query error in POST to /dishes/chefs/:id');
           } else {
-            console.log(results.insertId.toString(), 'IS RESULTS TO BE SEINDG BACK')
             res.send(results.insertId.toString());
           }
         }
