@@ -26,7 +26,7 @@ exports.isLoggedIn = function (req, res, next) {
 const validateEmail = (email) => {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
-}
+};
 
 // //middleware for users FIGURE OUT WHERE THIS GOES
 exports.isOwnProfile = function (req) {
@@ -49,8 +49,8 @@ const createSession = function (req, res, newUser) {
   let token = createToken(newUser);
   req.session = {
     id: newUser.id,
-    md5: newUser.md5,
-    AuthToken: token
+    AuthToken: token,
+    //FIND CHEFID LET IT BE NULL OR CHEF ID;
   };
   connection.query(
     'INSERT INTO tokens (token, id_userID) VALUES (?, (SELECT users.id FROM users WHERE users.email=?))',
@@ -66,8 +66,9 @@ const createSession = function (req, res, newUser) {
 
 exports.signUp = function (req, res) {
   let {name, bio, email, password} = req.body;
-
+  console.log(email, 'about to be validated')
   if(validateEmail(email) === false) {
+    console.log('INSIDE FALSE')
     res.status(422).send('Email input is not valid');
   } else {
     connection.query('SELECT * from users WHERE email=?', [email], 
