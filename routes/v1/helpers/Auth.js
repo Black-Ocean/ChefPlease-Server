@@ -23,6 +23,11 @@ exports.isLoggedIn = function (req, res, next) {
   });
 };
 
+const validateEmail = (email) => {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
 // //middleware for users FIGURE OUT WHERE THIS GOES
 exports.isOwnProfile = function (req) {
   return req.headers.isOwnProfile ? true : false;
@@ -61,32 +66,37 @@ const createSession = function (req, res, newUser) {
 
 exports.signUp = function (req, res) {
   let {name, bio, email, password} = req.body;
-  connection.query('SELECT * from users WHERE email=?', [email], 
-    function (err, results) {
-      if (err) {
-        res.status(500).send('Database query error during signup');
-      } else if (results && results.length) {
-        res.status(400).send("A user with that email already exists!");
-      } else {
-        //create new user
-        // let user = JSON.parse(JSON.stringify(results))[0];
-        bcrypt.hash(password, null, null, function(err, hashedPassword) {
-          let newUser = 'INSERT INTO users (name, bio, email, password, md5) VALUES (?, ?, ?, ?, ?)';
-          // Store hash in your password DB.
-          let hashedEmail = md5(email);  
-          connection.query(newUser, [name, bio, email, hashedPassword, hashedEmail],
-            function (err, results) {
-              if (err) {
-                console.log(err);
-              } else {
-                let newUser = {id: results.insertId, email: email, md5: hashedEmail, password: hashedPassword};
-                createSession(req, res, newUser);
+
+  if(validateEmail(email) === false) {
+    res.status(422).send('Email input is not valid');
+  } else {
+    connection.query('SELECT * from users WHERE email=?', [email], 
+      function (err, results) {
+        if (err) {
+          res.status(500).send('Database query error during signup');
+        } else if (results && results.length) {
+          res.status(400).send("A user with that email already exists!");
+        } else {
+          //create new user
+          // let user = JSON.parse(JSON.stringify(results))[0];
+          bcrypt.hash(password, null, null, function(err, hashedPassword) {
+            let newUser = 'INSERT INTO users (name, bio, email, password, md5) VALUES (?, ?, ?, ?, ?)';
+            // Store hash in your password DB.
+            let hashedEmail = md5(email);  
+            connection.query(newUser, [name, bio, email, hashedPassword, hashedEmail],
+              function (err, results) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  let newUser = {id: results.insertId, email: email, md5: hashedEmail, password: hashedPassword};
+                  createSession(req, res, newUser);
+                }
               }
-            }
-          )
-        });      
-      }
-  });
+            )
+          });      
+        }
+    });
+  }
 }
 
 exports.login = function (req, res) {
