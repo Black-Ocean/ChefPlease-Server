@@ -1,10 +1,7 @@
 // Auth Service with Token Based Authentication
 const bcrypt = require('bcrypt-nodejs');
 const connection = require('../../../db/index');
-const jwt = require('jsonwebtoken');
-const _ = require('lodash'); 
-const config = require('./config');
-const md5 = require('md5');
+const utils = require('./utility')
 
 // Middleware to protect view in the app
 exports.isLoggedIn = function (req, res, next) {
@@ -23,70 +20,72 @@ exports.isLoggedIn = function (req, res, next) {
   });
 };
 
-// //middleware for users FIGURE OUT WHERE THIS GOES
+
+//middleware for users FIGURE OUT WHERE THIS GOES
 exports.isOwnProfile = function (req) {
   return req.headers.isOwnProfile ? true : false;
 };
 
-exports.isAChef = function (req, res, next) {
-  return req.headers.isAChef ? true : false;
-};
-
-//creates a web token given in an object with a username
-const createToken = (user) => {
-  // Remove the pass word, then create the token that will expire in 1 month
-  return jwt.sign(_.omit(user, 'password'), config.secret, { expiresIn: 60*60*5 });
-};
-
-
 //Creates a session, sends user to home page and sends them back a token
 const createSession = function (req, res, newUser) {
-  let token = createToken(newUser);
+  let token = utils.createJSONWebToken(newUser);
+  let userId = newUser.id
   req.session = {
     id: newUser.id,
-    md5: newUser.md5,
     AuthToken: token
   };
   connection.query(
     'INSERT INTO tokens (token, id_userID) VALUES (?, (SELECT users.id FROM users WHERE users.email=?))',
     [token, newUser.email],
     function (err, results) {
-      if (err) {console.log(err)}
+      if (err) {console.log(err)
+      } else {
+        connection.query(`SELECT id FROM chefs where id_userID=${userId}`, function (err, results) {
+          if (err) {
+            res.status(500).send('Database error when looking for userId');
+          } else {
+            req.session.chefId = results[0] ? results[0].id : null;
+            res.status(201).send(req.session);
+          }
+        });
+      }
     }
   );
-  res.status(201).send(req.session);
 };
-
-
 
 exports.signUp = function (req, res) {
   let {name, bio, email, password} = req.body;
-  connection.query('SELECT * from users WHERE email=?', [email], 
-    function (err, results) {
-      if (err) {
-        res.status(500).send('Database query error during signup');
-      } else if (results && results.length) {
-        res.status(400).send("A user with that email already exists!");
-      } else {
-        //create new user
-        // let user = JSON.parse(JSON.stringify(results))[0];
-        bcrypt.hash(password, null, null, function(err, hashedPassword) {
-          let newUser = 'INSERT INTO users (name, bio, email, password, md5) VALUES (?, ?, ?, ?, ?)';
-          // Store hash in your password DB.
-          let hashedEmail = md5(email);  
-          connection.query(newUser, [name, bio, email, hashedPassword, hashedEmail],
-            function (err, results) {
-              if (err) {
-                console.log(err);
-              } else {
-                let newUser = {id: results.insertId, email: email, md5: hashedEmail, password: hashedPassword};
-                createSession(req, res, newUser);
+
+  if(utils.validateEmail(email) === false) {
+    res.status(422).send('Email input is not valid');
+  } else {
+    connection.query('SELECT * from users WHERE email=?', [email], 
+      function (err, results) {
+        if (err) {
+          res.status(500).send('Database query error during signup');
+        } else if (results && results.length) {
+          res.status(400).send("A user with that email already exists!");
+        } else {
+          //create new user
+          // let user = JSON.parse(JSON.stringify(results))[0];
+          bcrypt.hash(password, null, null, function(err, hashedPassword) {
+            let newUser = 'INSERT INTO users (name, bio, email, password, md5) VALUES (?, ?, ?, ?, ?)';
+            // Store hash in your password DB.
+            let hashedEmail = md5(email);  
+            connection.query(newUser, [name, bio, email, hashedPassword, hashedEmail],
+              function (err, results) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  let newUser = {id: results.insertId, email: email, md5: hashedEmail, password: hashedPassword};
+                  createSession(req, res, newUser);
+                }
               }
-            }
-          )
-        });      
-      }
-  });
+            )
+          });      
+        }
+    });
+  }
 }
 
 exports.login = function (req, res) {

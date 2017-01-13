@@ -5,8 +5,8 @@ var util = require('../helpers/Auth')
 
 const connection = require('../../../db/index');
 
-
-
+let localServer = 'http://127.0.0.1:3000';
+let deployedServer;
 /************************************************************/
 // Mocha doesn't have a way to designate pending before blocks.
 // Mimic the behavior of xit and xdescribe with xbeforeEach.
@@ -18,18 +18,25 @@ var xbeforeEach = function() {};
 
 
 describe('', function() {
-
-
-      
-
-
-
   describe ('Account Creation:', function() {
-
+    it('Should send back status 422, email input not valid if not a valid email address', function (done) {
+      var options = {
+        'method': 'POST',
+        'uri': localServer + '/signup',
+        'json': {
+          'email': 'invalidEmail',
+          'password': 'cake1'
+        }
+      };
+      request(options, function (err, res, body) {
+        expect(body).to.equal('Email input is not valid');
+        done();
+      });
+    })
     it('Signup creates a user record and sends back a token', function(done) {
       var options = {
         'method': 'POST',
-        'uri': 'http://127.0.0.1:3000/signup',
+        'uri': localServer + '/signup',
         'json': {
           'email': 'zack@gmail.com',
           'password': 'cake1'
@@ -45,9 +52,9 @@ describe('', function() {
     it('Should not sign up a user if that user already exists', function(done) {
       var options = {
         'method': 'POST',
-        'uri': 'http://127.0.0.1:3000/signup',
+        'uri': localServer + '/signup',
         'json': {
-          'email': 'anton',
+          'email': 'anton@gmail.com',
           'password': 'anton'
         }
       };
@@ -62,10 +69,10 @@ describe('', function() {
     it('Signup logs in a new user', function(done) {
       var options = {
         'method': 'POST',
-        'uri': 'http://127.0.0.1:3000/signup',
+        'uri': localServer + '/signup',
         'json': {
-          'email': 'Phillipbuhbuh',
-          'password': 'Phillipbuhbuh'
+          'email': 'anton@gmail.com',
+          'password': 'anton'
         }
       };
 
@@ -78,31 +85,47 @@ describe('', function() {
   }); // 'Account Creation'
 
 
-  // describe ('Account Login:', function() {
+  describe ('Account Login:', function() {
 
 
-  //     it ('Sends back a 401 if user tries to login with invalid credentials', function (done) {
-  //       var options = {
-  //         'method': 'POST',
-  //         'uri': 'http://127.0.0.1:3000/login',
-  //         'json': {
-  //           'email': 'JohnSmith',
-  //           'password': 'JohnSmith'
-  //         }
-  //       };
-  //       request(options, function(error, res, body) {
-  //         expect(res.body).to.equal('Unauthorized the username or password do not match');
-  //         done();
-  //       });
-  //     }) 
+    it ('Sends back a 401 if user tries to login with invalid credentials', function (done) {
+      var options = {
+        'method': 'POST',
+        'uri': localServer + '/login',
+        'json': {
+          'email': 'JohnSmith@gmail.com',
+          'password': 'JohnSmith'
+        }
+      };
+      request(options, function(error, res, body) {
+        expect(body).to.equal('Invalid email or password');
+        done();
+      });
+    })
 
-  // }); // 'Account Login'
+    it(' Should send back the chef ID if the user is a chef', function(done) {
+      var options = {
+        'method': 'POST',
+        'uri': localServer + '/login',
+        'json': {
+          'email': 'martha@gmail.com',
+          'password': 'martha'
+        }
+      };
+
+      request(options, function(error, res, body) {
+        expect(body.chefId).to.be.a('number');
+        done();
+      });
+    }); 
+
+  }); // 'Account Login'
 
   describe ('Account Logout:', function () {
     it ('Logs out users and destroys the token in database', function (done) {
       var options = {
         'method': 'GET',
-        'uri': 'http://127.0.0.1:3000/logout',
+        'uri': localServer + '/logout',
         'json': {
           'email': 'Phillip',
           'password': 'Phillip'
@@ -118,30 +141,50 @@ describe('', function() {
 
 
   describe ('Creating dishes for chefs', function () {
-    it ('creates a new dish for a chef', function (done) {
+    it('should belong to a chef, so let`s create a chef first...', function (done) {
       var options = {
         'method': 'POST',
-        'uri': 'http://127.0.0.1:3000/dishes/chefs/2',
+        'uri': localServer + '/chefs/',
         'json': {
-          'name': 'Pasta',
-          'text': 'It is delicious',
-          'image': 'imageURL',
-          'price': 10,
-          'restrictions': 'vegan',
-          'cuisine': 'italian'
+          'name': 'AntonChef',
+          'bio': 'Best cook in the world',
+          'image': 'image.url',
+          'locations': '[San Francisco]',
+          'cuisines': '[Italian]',
+          'restrictions': '[Dairy]'
         }
       };
+
       request(options, function(error, res, body) {
         expect(res.body).to.be.a('number');
         done();
-      });
+      });      
+    });
 
-    })
+    // it ('should return a number of the dishId', function (done) {
+    //   var options = {
+    //     'method': 'POST',
+    //     'uri': localServer + '/dishes/chefs/1',
+    //     'json': {
+    //       'name': 'Pasta',
+    //       'text': 'It is delicious',
+    //       'image': 'imageURL',
+    //       'price': '10',
+    //       'restrictions': 'vegan',
+    //       'cuisine': 'italian'
+    //     }
+    //   };
+    //   request(options, function(error, res, body) {
+    //     expect(res.body).to.be.a('number');
+    //     done();
+    //   });
+
+    // })
 
     it ('gets all dishes for a particular chef ', function (done) {
       var options = {
         'method': 'GET',
-        'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
+        'uri': localServer + '/dishes/chefs/1',
       };
       request(options, function(error, res, body) {
         expect(JSON.parse(res.body)).to.not.be.empty;
@@ -156,7 +199,7 @@ describe('', function() {
     it ('create a new dish for a chef', function (done) {
       var options = {
         'method': 'PUT',
-        'uri': 'http://127.0.0.1:3000/chefs/1',
+        'uri': localServer + '/chefs/1',
         'json': {
           'name': 'notAntonanymore',
           'bio': 'my name is anton!!!',
@@ -174,7 +217,7 @@ describe('', function() {
     it ('get dishes for a particular chef ', function (done) {
       var options = {
         'method': 'GET',
-        'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
+        'uri': localServer + '/dishes/chefs/1',
       };
       request(options, function(error, res, body) {
         expect(JSON.parse(res.body)).to.not.be.empty;
@@ -185,81 +228,94 @@ describe('', function() {
   });
   //CREATING EVENTS
 
-    // it ('are created in a POST request to /dishes/chefs/:id', function (done) {
-    //   var options = {
-    //     'method': 'POST',
-    //     'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
-    //     'json': {
-    //       'name': 'social night',
-    //       'time': '1000-01-01 00:00:00',
-    //       'location': 'Hack Reactor',
-    //       'chefID': 1,
-    //       'userID': 29,
-    //       'quantities': 2
-    //     }
-    //   };
-    //   request(options, function (err, res, body) {
-    //     expect(res.body).to.be.a('object')
-    //     done();
-    //   })
-    // });
   describe('Events', function () {
-    it('are created by the user, the response will be the eventId', function (done) {
+    //
+
+
+    // FIX THIS TEST
+    xit ('are created in a POST request to /dishes/chefs/:id', function (done) {
       var options = {
         'method': 'POST',
-        'uri': 'http://127.0.0.1:3000/events/',
+        'uri': localServer + '/dishes/chefs/1',
+        'json': {
+          'name': 'social night',
+          'time': '1000-01-01 00:00:00',
+          'location': 'Hack Reactor',
+          'chefID': 1,
+          'userID': 29,
+          'quantities': 2
+        }
+      };
+      request(options, function (err, res, body) {
+        expect(body).to.be.an('object')
+        done();
+      })
+    });
+
+    xit('are created by the user, the response will be the eventId', function (done) {
+      var options = {
+        'method': 'POST',
+        'uri': localServer + '/events/',
           'json': {
             "name": "NPM TalkING",
             "time": "1000-01-01 00:00:00",
             "location": "San Francisco",
             "text": "Really fun stuff",
-            "userId": "27",
-            "chefId": "2",
+            "userId": "2",
+            "chefId": "18",
             "quantity": "3"
           }
       };  
       request(options, function (err, res, body) {
-        expect(JSON.parse(res.body)).to.be.a('number');
+        expect(body).to.be.a('number');
         done()
       });      
     });
-    it('will be an empty array if a user has no events', function (done) {
+
+    it('should be an array with objects for a specific user', function (done) {
       var options = {
         'method': 'GET',
-        'uri': 'http://127.0.0.1:3000/events/users/1',
+        'uri': localServer + '/events/users/1'
       };
       request(options, function (err, res, body) {
-        expect(JSON.parse(res.body)).to.deep.equal([]);//        
+        expect(body).to.not.be.empty;       
         done();
       })
     });
+
+    //Delete events so that there aren't foreign key constraints
+    afterEach(function (done) {
+      connection.query('DELETE FROM events WHERE name=${NPM TalkING}', function (err, results) {        
+        done();
+      })
+    })
   })
 
   describe('Dishes for a chef:', function () {
-    it('POST should write to the DB and return the dishId ', function (done) {
-      var options = {
-        'method': 'POST',
-        'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
-        'json': {
-          "name" : "steak",
-          "text" : "medium-rare",
-          "image": "image-url",
-          "price": "10"
-        }
-      };
-      request(options, function (err, res, body) {
-        expect(JSON.parse(res.body)).to.be.a('number');        
-        done();
-      })      
-    });
+      it('POST should write to the DB and return the dishId ', function (done) {
+        var options = {
+          'method': 'POST',
+          'uri': localServer + '/dishes/chefs/1',
+          'json': {
+            "name" : "steak",
+            "text" : "medium-rare",
+            "image": "image-url",
+            "price": "10"
+          }
+        };
+        request(options, function (err, res, body) {
+          expect(body).to.be.a('number');        
+          done();
+        })      
+      });
 
     it('GET should return all dishes for a chef ', function (done) {
       var options = {
         'method': 'GET',
-        'uri': 'http://127.0.0.1:3000/dishes/chefs/1',
+        'uri': localServer + '/dishes/chefs/1',
       };
       request(options, function (err, res, body) {
-        expect(JSON.parse(res.body)).to.not.be.empty;        
+        expect(body).to.not.be.empty;        
         done();
       })      
     });
@@ -267,14 +323,45 @@ describe('', function() {
   });  
 
 
+
+
   describe('Getting chefs in a location who meet certain restrictions', function () {
+    //Populate DB with a chef with a certain restriction
+    before(function (done) {
+      var options = {
+        'method': 'POST',
+        'uri': localServer + '/chefs/',
+        'json': {
+          "name": "zackTheChef",
+          "bio": "I love to cook, game and code",
+          "userID":"1",
+          "locations": "San Francisco, CA, USA",
+          "cuisines":"Italian",
+          "restrictions":"Peanuts"
+        }
+      };
+      request(options, function (err, res, body) {        
+        done();
+      })
+    }) 
     it('should return an empty array if no chefs meet the criteria', function (done) {
       var options = {
         'method': 'GET',
-        'uri': 'http://127.0.0.1:3000/chefs/?cuisine=italian&location=San%20Francisco&restrictions=Soy&restrictions=Peanuts',
+        'uri': localServer + '/chefs/?cuisine=italian&location=San%20Francisco&restrictions=Soy&restrictions=Peanuts',
       };
       request(options, function (err, res, body) {
         expect(JSON.parse(res.body)).to.be.empty;
+        done();
+      })      
+    });
+
+    it('should return an array of chefs if restrictions met', function (done) {
+      var options = {
+        'method': 'GET',
+        'uri': localServer + '/chefs/?cuisine=italian&location=San%20Francisco,%20CA,%20USA&restrictions=Peanuts',
+      };
+      request(options, function (err, res, body) {
+        expect(body).to.not.be.empty;
         done();
       })      
     });
