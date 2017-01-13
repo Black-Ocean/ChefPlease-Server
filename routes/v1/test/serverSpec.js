@@ -85,25 +85,41 @@ describe('', function() {
   }); // 'Account Creation'
 
 
-  // describe ('Account Login:', function() {
+  describe ('Account Login:', function() {
 
 
-  //     it ('Sends back a 401 if user tries to login with invalid credentials', function (done) {
-  //       var options = {
-  //         'method': 'POST',
-  //         'uri': localServer + '/login',
-  //         'json': {
-  //           'email': 'JohnSmith',
-  //           'password': 'JohnSmith'
-  //         }
-  //       };
-  //       request(options, function(error, res, body) {
-  //         expect(res.body).to.equal('Unauthorized the username or password do not match');
-  //         done();
-  //       });
-  //     }) 
+    it ('Sends back a 401 if user tries to login with invalid credentials', function (done) {
+      var options = {
+        'method': 'POST',
+        'uri': localServer + '/login',
+        'json': {
+          'email': 'JohnSmith@gmail.com',
+          'password': 'JohnSmith'
+        }
+      };
+      request(options, function(error, res, body) {
+        expect(body).to.equal('Invalid email or password');
+        done();
+      });
+    })
 
-  // }); // 'Account Login'
+    it(' Should send back the chef ID if the user is a chef', function(done) {
+      var options = {
+        'method': 'POST',
+        'uri': localServer + '/login',
+        'json': {
+          'email': 'martha@gmail.com',
+          'password': 'martha'
+        }
+      };
+
+      request(options, function(error, res, body) {
+        expect(body.chefId).to.be.a('number');
+        done();
+      });
+    }); 
+
+  }); // 'Account Login'
 
   describe ('Account Logout:', function () {
     it ('Logs out users and destroys the token in database', function (done) {
@@ -212,67 +228,60 @@ describe('', function() {
   });
   //CREATING EVENTS
 
-    // it ('are created in a POST request to /dishes/chefs/:id', function (done) {
-    //   var options = {
-    //     'method': 'POST',
-    //     'uri': localServer + '/dishes/chefs/1',
-    //     'json': {
-    //       'name': 'social night',
-    //       'time': '1000-01-01 00:00:00',
-    //       'location': 'Hack Reactor',
-    //       'chefID': 1,
-    //       'userID': 29,
-    //       'quantities': 2
-    //     }
-    //   };
-    //   request(options, function (err, res, body) {
-    //     expect(res.body).to.be.a('object')
-    //     done();
-    //   })
-    // });
   describe('Events', function () {
+    //
 
-    // it('are created by the user, the response will be the eventId', function (done) {
-    //   var options = {
-    //     'method': 'POST',
-    //     'uri': localServer + '/events/',
-    //       'json': {
-    //         "name": "NPM TalkING",
-    //         "time": "1000-01-01 00:00:00",
-    //         "location": "San Francisco",
-    //         "text": "Really fun stuff",
-    //         "userId": "2",
-    //         "chefId": "18",
-    //         "quantity": "3"
-    //       }
-    //   };  
-    //   request(options, function (err, res, body) {
-    //     expect(JSON.parse(res.body)).to.be.a('number');
-    //     done()
-    //   });      
-    // });
 
-    // it('should be an array with objects for a specific user', function (done) {
-    //   var options = {
-    //     'method': 'GET',
-    //     'uri': localServer + '/events/users/1'
-    //   };
-    //   request(options, function (err, res, body) {
-    //     console.log(body, 'IS BODYYYYY')
-    //     expect(JSON.parse(res.body)).to.deep.equal([
-    //       {
-    //         "id": 2,
-    //         "name": "NPM TalkING",
-    //         "time": null,
-    //         "location": "San Francisco",
-    //         "text": "Really fun stuff",
-    //         "id_users": 1,
-    //         "id_events": 2
-    //       }
-    //     ]);//        
-    //     done();
-    //   })
-    // });
+    // FIX THIS TEST
+    xit ('are created in a POST request to /dishes/chefs/:id', function (done) {
+      var options = {
+        'method': 'POST',
+        'uri': localServer + '/dishes/chefs/1',
+        'json': {
+          'name': 'social night',
+          'time': '1000-01-01 00:00:00',
+          'location': 'Hack Reactor',
+          'chefID': 1,
+          'userID': 29,
+          'quantities': 2
+        }
+      };
+      request(options, function (err, res, body) {
+        expect(body).to.be.an('object')
+        done();
+      })
+    });
+
+    xit('are created by the user, the response will be the eventId', function (done) {
+      var options = {
+        'method': 'POST',
+        'uri': localServer + '/events/',
+          'json': {
+            "name": "NPM TalkING",
+            "time": "1000-01-01 00:00:00",
+            "location": "San Francisco",
+            "text": "Really fun stuff",
+            "userId": "2",
+            "chefId": "18",
+            "quantity": "3"
+          }
+      };  
+      request(options, function (err, res, body) {
+        expect(body).to.be.a('number');
+        done()
+      });      
+    });
+
+    it('should be an array with objects for a specific user', function (done) {
+      var options = {
+        'method': 'GET',
+        'uri': localServer + '/events/users/1'
+      };
+      request(options, function (err, res, body) {
+        expect(body).to.not.be.empty;       
+        done();
+      })
+    });
 
     //Delete events so that there aren't foreign key constraints
     afterEach(function (done) {
@@ -295,8 +304,7 @@ describe('', function() {
           }
         };
         request(options, function (err, res, body) {
-          console.log(err, 'IS err')
-          expect(JSON.parse(res.body)).to.be.a('number');        
+          expect(body).to.be.a('number');        
           done();
         })      
       });
@@ -307,7 +315,7 @@ describe('', function() {
         'uri': localServer + '/dishes/chefs/1',
       };
       request(options, function (err, res, body) {
-        expect(JSON.parse(res.body)).to.not.be.empty;        
+        expect(body).to.not.be.empty;        
         done();
       })      
     });
