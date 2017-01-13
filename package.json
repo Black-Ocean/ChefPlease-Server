@@ -7,7 +7,7 @@
     "node": "6.3.1"
   },
   "scripts": {
-    "test": "node server.js & mocha --bail --reporter nyan routes/v1/test/serverSpec.js; pkill -n node",
+    "test": "node server.js & mocha --bail routes/v1/test/serverSpec.js; pkill -n node",
     "start": "node server.js",
     "dev": "nodemon server.js"
   },

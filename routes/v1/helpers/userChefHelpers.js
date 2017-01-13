@@ -32,8 +32,30 @@ var formatSearch = function(input) {
 // with a single cuisine, location and multiple restrictions
 var chefSearchQuery = function(queryObj) {
   let { cuisine, location, restrictions } = queryObj;
-  if (restrictions.length > 0){
-    var result = `
+  var result;
+  if (!restrictions) {
+    result = `SELECT
+        chef.id,
+        chef.name,
+        chef.bio,
+        chef.avgRating,
+        chef.id_userID,
+        user.md5
+      FROM chefs AS chef
+        INNER JOIN users AS user
+          ON (chef.id_userID = user.id)
+        INNER JOIN chefs_cuisines AS cc
+          ON (chef.id = cc.id_chefID)
+          INNER JOIN cuisines AS c
+            ON (cc.id_cuisineID = c.id)
+        INNER JOIN chefs_locations AS cl
+          ON (chef.id = cl.id_chefID)
+          INNER JOIN locations AS l
+            ON (cl.id_locationID = l.id)
+        WHERE c.cuisine = ? AND 
+          l.city = ?`;
+  } else if (restrictions){
+    result = `
       SELECT
         chef.id,
         chef.name,
@@ -46,16 +68,16 @@ var chefSearchQuery = function(queryObj) {
           ON (chef.id_userID = user.id)
         INNER JOIN chefs_cuisines AS cc
           ON (chef.id = cc.id_chefID)
-        INNER JOIN cuisines AS c
-          ON (cc.id_cuisineID = c.id)
+          INNER JOIN cuisines AS c
+            ON (cc.id_cuisineID = c.id)
         INNER JOIN chefs_locations AS cl
           ON (chef.id = cl.id_chefID)
-        INNER JOIN locations AS l
-          ON (cl.id_locationID = l.id)
+          INNER JOIN locations AS l
+            ON (cl.id_locationID = l.id)
         INNER JOIN chefs_restrictions AS cr
           ON (chef.id = cr.id_chefID)
-        INNER JOIN restrictions AS r
-          ON (cr.id_restrictionID = r.id)
+          INNER JOIN restrictions AS r
+            ON (cr.id_restrictionID = r.id)
         WHERE c.cuisine = ? AND 
           l.city = ? AND 
           r.restriction IN ${formatSearch(restrictions)}`;
