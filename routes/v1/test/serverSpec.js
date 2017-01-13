@@ -7,9 +7,9 @@ var util = require('../helpers/Auth')
 const connection = require('../../../db/index');
 
 let localServer = 'http://127.0.0.1:3000';
-let deployedServer;
+let dbURL = 'http://127.0.0.1:3000';
 
-const dbURL = 'http://127.0.0.1:3000';
+let deployedServer;
 
 /************************************************************/
 // Mocha doesn't have a way to designate pending before blocks.
@@ -18,7 +18,91 @@ const dbURL = 'http://127.0.0.1:3000';
 // authentication tests.
 /************************************************************/
 /************************************************************/
+var signupUser = function(username) {
+  let options = {
+    'method': 'POST',
+    'uri': dbURL + '/signup',
+    'json': {
+      'name': username,
+      'email': `${username}@gmail.com`,
+      'password': username
+    }
+  };
 
+  return request(options)
+  .then(function(res) {
+    return res.body.id;
+  })
+  .catch(function(err) {
+    console.log('error in posting user to db', err);
+    throw new Error('Failed to post user to db');
+  });  
+};
+
+var signupUsers = function(users) {
+  return Promise.map(users, function(username) {
+    return signupUser(username);
+  })
+  .then(function(userIDs) {
+    console.log('inserted user(s) are', userIDs);
+    return userIDs;
+  });
+};
+
+var signupChef = function(chef) {
+  let options = {
+    'method': 'POST',
+    'uri': dbURL + '/chefs',
+    'json': {
+      'name': chef[1],
+      'bio': `Chef account for ${chef[1]}`,
+      'userID': parseInt(chef[0]),
+      'restrictions': 'Eggs',
+      'locations': 'San Francisco, CA, USA',
+      'cuisines': 'Chinese'
+    }
+  };
+
+  return request(options)
+  .then(function(res) {
+    return res.body;
+  })
+  .catch(function(err) {
+    console.log('error in posting chef to db', err);
+    throw new Error('Failed to post chef to db');
+  });
+};
+
+var signupChefs = function(userIDs, usernames) {
+  console.log(userIDs, usernames);
+  // chefs should be an array of tuples:[ [id, chefName] , ...]
+  var chefs = userIDs.map((id, index) => ([parseInt(id), usernames[index]]));
+  return Promise.map(chefs, function(chef) {
+    return signupChef(chef);
+  })
+  .then(function(data) { 
+    return data;
+  });
+}
+
+before(function() {
+  // setup users and chefs
+  var names = ['anton', 'adam', 'zack', 'suhail'];
+  signupUsers(names)
+  .then(function(userIDs) {
+    console.log('user ids are', user_ids);
+    return signupChefs(userIDs, names)
+    .then(function(chefIDs) {
+      console.log('chefIDs are', chefIDs);
+    })
+    .catch(function(err) {
+      console.log('ERROR in chef signup');
+    })
+  })
+  .catch(function(err) {
+    console.log('ERROR in test setup!');
+  })
+});
 describe('', function() {
   describe ('Account Creation:', function() {
     it('Should send back status 422, email input not valid if not a valid email address', function (done) {

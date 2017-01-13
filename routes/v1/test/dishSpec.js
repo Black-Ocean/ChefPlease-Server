@@ -77,9 +77,10 @@ var signupChefs = function(userIDs, usernames) {
 before(function() {
   // setup users and chefs
   var names = ['anton', 'adam', 'zack', 'suhail'];
-
   signupUsers(names)
   .then(function(userIDs) {
+    var user_ids = userIDs;
+    console.log('user ids are', user_ids);
     return signupChefs(userIDs, names)
     .then(function(chefIDs) {
       console.log('chefIDs are', chefIDs);
@@ -94,7 +95,10 @@ describe('', function() {
   describe('Dish Creation:', function() {
     describe('posting a dish for a chef', function() {
       // HARDCODED CHEF IDS due to insurmountable Promise bugs
-
+      // name, text, image, price, id_chefID
+      it('Should post a dish and respond with dish ID', function(done) {
+        done();
+      })
     });
   });
 });
