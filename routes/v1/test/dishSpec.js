@@ -33,9 +33,9 @@ var signupUsers = function(users) {
   return Promise.map(users, function(username) {
     return signupUser(username);
   })
-  .then(function(data) {
-    console.log('inserted user(s) are', data);
-    return data;
+  .then(function(userIDs) {
+    console.log('inserted user(s) are', userIDs);
+    return userIDs;
   });
 };
 
@@ -55,7 +55,6 @@ var signupChef = function(chef) {
 
   return request(options)
   .then(function(res) {
-    console.log('BODY IS', res.body);
     return res.body;
   })
   .catch(function(err) {
@@ -71,7 +70,6 @@ var signupChefs = function(userIDs, usernames) {
     return signupChef(chef);
   })
   .then(function(data) { 
-    console.log('inserted chef(s) are', data); 
     return data;
   });
 }
@@ -86,17 +84,17 @@ before(function() {
     .then(function(chefIDs) {
       console.log('chefIDs are', chefIDs);
     })
-    .catch(function(err) {
-      console.log('ERROR in chef setup!');
-    });
   })
   .catch(function(err) {
-    console.log('ERROR in user setup!');
+    console.log('ERROR in test setup!');
   })
 });
 
 describe('', function() {
   describe('Dish Creation:', function() {
-    describe()
+    describe('posting a dish for a chef', function() {
+      // HARDCODED CHEF IDS due to insurmountable Promise bugs
+
+    });
   });
 });
