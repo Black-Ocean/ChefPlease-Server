@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken');
+const _ = require('lodash'); 
+const config = require('./config');
 
 
 exports.validateEmail = (email) => {
