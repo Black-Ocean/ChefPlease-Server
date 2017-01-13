@@ -1,7 +1,7 @@
 const url = require('url');
 const connection = require('../../db/index.js');
 const helpers = require('./helpers/userChefHelpers.js');
-const util = require('./helpers/Auth.js');
+const utils = require('./helpers/utility.js');
 
 module.exports = function(app) {  
   app.get('/users', function(req, res, next) {
@@ -10,7 +10,7 @@ module.exports = function(app) {
       if (err) {
           res.status(500).send('Database query error during GET to /users');
       } else {
-        res.send(results);
+        res.send(utils.filterSingle(results));
       }
     });
   });  
@@ -22,7 +22,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('Database query error during GET to /users/:id');
       } else {
-        res.send(results);        
+        res.send(utils.filterSingle(results));
       }
     });
   });
@@ -36,7 +36,7 @@ module.exports = function(app) {
         if (err) {
           res.status(404).send('Database query error during PUT to /users/:id');
         } else {
-          res.send(results);
+          res.send('User was updated!');
         }
       }
     )
@@ -50,7 +50,7 @@ module.exports = function(app) {
         if (err) {
           res.status(500).send('Database query error during GET to /chefs');
         } else {          
-          res.send(helpers.removeDuplicates(chefResults));
+          res.send(utils.filterSingle(helpers.removeDuplicates(chefResults)));
         }
         // filter out duplicate chefs
       }
@@ -64,7 +64,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('User not found');
       } else {
-        res.send(results);
+        res.send(utils.filterSingle(results));
       }
     });
   });
