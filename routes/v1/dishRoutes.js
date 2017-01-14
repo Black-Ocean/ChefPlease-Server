@@ -11,7 +11,7 @@ module.exports = function(app) {
         if (err) {
           next(err)
         } else {
-          res.send(utils.filterSingle(results));
+          res.send(results);
         }
       });
     })

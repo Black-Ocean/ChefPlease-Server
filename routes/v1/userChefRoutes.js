@@ -3,6 +3,8 @@ const connection = require('../../db/index.js');
 const helpers = require('./helpers/userChefHelpers.js');
 const utils = require('./helpers/utility.js');
 
+const Promise = require('bluebird');
+
 module.exports = function(app) {  
   app.get('/users', function(req, res, next) {
     let qString = 'SELECT * FROM users';
@@ -84,11 +86,31 @@ module.exports = function(app) {
             if (err) {
               res.sendStatus(404);
             }
-            // add chefs locations
-            connection.query(`INSERT INTO chefs_locations (id_chefID, id_locationID) \
-                              SELECT ?, id FROM locations \
-                              WHERE city IN ${helpers.formatSearch(chef.locations)}`,
-                              [chefID]);
+
+            // check provided user's location, add to /locations if not found
+            // Assume chef.locations is singular
+            connection.query(`SELECT id FROM locations WHERE city = "${chef.locations}"`, 
+            function(err, results) {
+              if (err) {
+                return res.status(500).send(`Database query error for chef's location`);
+              } else if (results.length === 0) {
+                // Provided location is not contained in DB, insert the location into location table
+                connection.query(`INSERT INTO locations (city) 
+                                  VALUES ${helpers.formatSearch(chef.locations)}`, 
+                function(err, results) {
+                  if (err) {
+                    return res.status(500).send(`Database query error in insert to chefs_locations`);
+                  }
+                  connection.query(`INSERT INTO chefs_locations (id_chefID, id_locationID)
+                                    VALUES (?, ?)`, [chefID, results.insertId]);
+                });
+              } else if (results.length > 0) {
+                // Provided location is contained in DB, insert like normal
+                connection.query(`INSERT INTO chefs_locations (id_chefID, id_locationID)
+                                  VALUES (?, ?)`, [chefID, results[0].id]);
+              }
+            });
+
             // add chefs cuisines
             connection.query(`INSERT INTO chefs_cuisines (id_chefID, id_cuisineID) \
                               SELECT ?, id FROM cuisines \
