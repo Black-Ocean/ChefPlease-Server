@@ -9,8 +9,6 @@ const connection = require('../../../db/index');
 let localServer = 'http://127.0.0.1:3000';
 let deployedServer;
 
-const dbURL = 'http://127.0.0.1:3000';
-
 /************************************************************/
 // Mocha doesn't have a way to designate pending before blocks.
 // Mimic the behavior of xit and xdescribe with xbeforeEach.
@@ -18,7 +16,10 @@ const dbURL = 'http://127.0.0.1:3000';
 // authentication tests.
 /************************************************************/
 /************************************************************/
-
+before(function() {
+  // setup users and chefs
+  // var names = ['anton', 'adam', 'zack', 'suhail'];
+});
 describe('', function() {
   describe ('Account Creation:', function() {
     it('Should send back status 422, email input not valid if not a valid email address', function (done) {
