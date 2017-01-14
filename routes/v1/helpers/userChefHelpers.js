@@ -1,4 +1,5 @@
 const url = require('url');
+const connection = require('../../../db/index.js');
 
 // formatSearch:
 // Formats input into '('ele1', 'ele2', 'ele3', ...)'
@@ -104,8 +105,49 @@ var removeDuplicates = function(response) {
   });
 };
 
+var insertChefLocations = function(locations, chefID) {
+  connection.query(`SELECT id FROM locations WHERE city = "${locations}"`, 
+  function(err, results) {
+    if (err) {
+      return res.status(500).send(`Database query error for chef's location`);
+    } else if (results.length === 0) {
+      // Provided location is not contained in DB, insert the location into location table
+      connection.query(`INSERT INTO locations (city) 
+                        VALUES ${formatSearch(locations)}`, 
+      function(err, results) {
+        if (err) {
+          return res.status(500).send(`Database query error in insert to chefs_locations`);
+        }
+        connection.query(`INSERT INTO chefs_locations (id_chefID, id_locationID)
+                          VALUES (?, ?)`, [chefID, results.insertId]);
+      });
+    } else if (results.length > 0) {
+      // Provided location is contained in DB, insert like normal
+      connection.query(`INSERT INTO chefs_locations (id_chefID, id_locationID)
+                        VALUES (?, ?)`, [chefID, results[0].id]);
+    }
+  });
+};
+
+var insertChefCuisines = function(cuisines, chefID) {
+  connection.query(`INSERT INTO chefs_cuisines (id_chefID, id_cuisineID) \
+    SELECT ?, id FROM cuisines \
+    WHERE cuisine IN ${formatSearch(cuisines)}`,
+    [chefID]);
+};
+
+var insertChefRestrictions = function(restrictions, chefID) {
+  connection.query(`INSERT INTO chefs_restrictions (id_chefID, id_restrictionID) \
+    SELECT ?, id FROM restrictions \
+    WHERE restriction IN ${formatSearch(restrictions)}`,
+    [chefID]);
+};
+
 module.exports = {
   formatSearch : formatSearch,
   chefSearchQuery : chefSearchQuery,
-  removeDuplicates: removeDuplicates
+  removeDuplicates: removeDuplicates,
+  insertChefLocations: insertChefLocations,
+  insertChefCuisines: insertChefCuisines,
+  insertChefRestrictions: insertChefRestrictions
 };
