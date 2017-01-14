@@ -5,7 +5,7 @@ var request = Promise.promisify(require('request'));
 var util = require('../helpers/Auth')
 var helpers = require('./testHelpers.js');
 
-const connection = require('../../../db/index');
+// const connection = require('../../../db/index');
 
 let dbURL = 'http://127.0.0.1:3000';
 

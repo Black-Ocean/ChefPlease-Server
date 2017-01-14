@@ -132,14 +132,45 @@ module.exports = function(app) {
   });
 
   app.put('/chefs/:id', function(req, res, next) {
-    let chef = req.body;
     let chefID = req.params.id;
+    let {name, bio, locations, cuisines, restrictions} = req.body;
+
     let qString = 'UPDATE chefs SET name = ?, bio = ? WHERE id = ?';
-    connection.query(qString, [chef.name, chef.bio, chefID],
+    connection.query(qString, [name, bio, chefID],
       function(err, results) {
         if (err) {
-            res.status(404).send('Database query error for PUT to /chefs');
+          res.status(404).send('Database query error for PUT to /chefs');
         } else {
+          connection.query(`DELETE FROM chefs_locations WHERE id_chefID = ?`, [chefID], 
+            function(err, results) {
+              if (err) {
+                return res.sendStatus(500); 
+              } else { 
+                helpers.insertChefLocations(locations, chefID); 
+              }
+            }
+          );
+
+          connection.query(`DELETE FROM chefs_cuisines WHERE id_chefID = ?`, [chefID], 
+            function(err, results) {
+              if (err) {
+                return res.sendStatus(500); 
+              } else { 
+                helpers.insertChefCuisines(cuisines, chefID);
+              }
+            }
+          );
+          
+          connection.query(`DELETE FROM chefs_restrictions WHERE id_chefID = ?`, [chefID], 
+            function(err, results) {
+              if (err) {
+                return res.sendStatus(500); 
+              } else { 
+                helpers.insertChefRestrictions(restrictions, chefID);
+              }
+            }
+          );
+
           res.send('Chef was updated!');
         }
       }
