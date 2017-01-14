@@ -71,15 +71,16 @@ var signupChefs = function(userIDs, usernames) {
   .then(function(data) { 
     return data;
   });
-}
+};
 
-before(function() {
+before(function(done) {
   // setup users and chefs
   var names = ['anton', 'adam', 'zack', 'suhail'];
   signupUsers(names)
   .then(function(data) {
     return signupChefs(data, names)
     .then(function(chefIDs) {
+      done();
     })
     .catch(function(err) {
       console.log('ERROR in chef signup');
@@ -91,8 +92,8 @@ before(function() {
 });
 
 describe('', function() {
-  describe ('Dish Creation:', function() {
-    it('Should return integer dish id when posting to /dishes/chefs/:id', function (done) {
+  describe('Dish creation: POST to /dishes/chefs/:id', function() {
+    it('Should return integer dish id', function (done) {
       var newDish = {
         name: 'dish name test',
         text: 'dish text test',
@@ -108,6 +109,7 @@ describe('', function() {
       .then(function(chefid) {
         expect(chefid).to.be.a('number');
         
+        // append returned chefid onto newDish
         newDish.id_chefID = chefid;
 
         var options = {
@@ -119,17 +121,35 @@ describe('', function() {
       })
       .then(function(res) {
         expect(res.body).to.be.a('number');
-        console.log('is newDish.id_chefID set?', newDish.id_chefID);
         var options = {
           'method': 'GET',
           'uri': dbURL + `/dishes/chefs/${newDish.id_chefID}`
         };
         request(options)
-        .then(function())
-        done();
-      });
+        .then(function(response) {
+          // only a single dish was inserted for the test chef, 
+          // dishes will be a single element array
+          dishes = JSON.parse(response.body);
+          expect(dishes[0].id_chefID).to.equal(newDish.id_chefID);
+          done();
+        })
+      })
+      .catch(function(err) {
+        console.log('Test broken');
+        throw(err);
+      })
     });
 
-    it('Should return ')
+    xit('Invalid Input tests', function(done) {
+      done();
+    })
+  });
+
+  describe('Dish update: PUT to /dishes/:dishId', function() {
+
+  });
+
+  describe('Dish delete: DELETE to /dishes/:dishId', function() {
+
   });
 });
