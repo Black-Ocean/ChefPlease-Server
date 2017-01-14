@@ -6,7 +6,7 @@ var util = require('../helpers/Auth')
 
 const connection = require('../../../db/index');
 
-const dbURL = 'http://127.0.0.1:3000';
+let dbURL = 'http://127.0.0.1:3000';
 
 var signupUser = function(username) {
   let options = {
@@ -34,7 +34,6 @@ var signupUsers = function(users) {
     return signupUser(username);
   })
   .then(function(userIDs) {
-    console.log('inserted user(s) are', userIDs);
     return userIDs;
   });
 };
@@ -77,12 +76,13 @@ var signupChefs = function(userIDs, usernames) {
 before(function() {
   // setup users and chefs
   var names = ['anton', 'adam', 'zack', 'suhail'];
-
   signupUsers(names)
-  .then(function(userIDs) {
-    return signupChefs(userIDs, names)
+  .then(function(data) {
+    return signupChefs(data, names)
     .then(function(chefIDs) {
-      console.log('chefIDs are', chefIDs);
+    })
+    .catch(function(err) {
+      console.log('ERROR in chef signup');
     })
   })
   .catch(function(err) {
@@ -91,10 +91,45 @@ before(function() {
 });
 
 describe('', function() {
-  describe('Dish Creation:', function() {
-    describe('posting a dish for a chef', function() {
-      // HARDCODED CHEF IDS due to insurmountable Promise bugs
+  describe ('Dish Creation:', function() {
+    it('Should return integer dish id when posting to /dishes/chefs/:id', function (done) {
+      var newDish = {
+        name: 'dish name test',
+        text: 'dish text test',
+        image: 'dish img test',
+        price: 20
+      };
 
+      signupUser('DishPostTest1')
+      .then(function(userid) {
+        expect(userid).to.be.a('number');
+        return signupChef([userid, 'DishPostTest1']);
+      })
+      .then(function(chefid) {
+        expect(chefid).to.be.a('number');
+        
+        newDish.id_chefID = chefid;
+
+        var options = {
+          'method': 'POST',
+          'uri': dbURL + `/dishes/chefs/${chefid}`,
+          'json': newDish
+        }
+        return request(options);
+      })
+      .then(function(res) {
+        expect(res.body).to.be.a('number');
+        console.log('is newDish.id_chefID set?', newDish.id_chefID);
+        var options = {
+          'method': 'GET',
+          'uri': dbURL + `/dishes/chefs/${newDish.id_chefID}`
+        };
+        request(options)
+        .then(function())
+        done();
+      });
     });
+
+    it('Should return ')
   });
 });

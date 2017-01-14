@@ -9,7 +9,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('Database query error in GET to /locations');
       } else {
-        res.send(utils.filterSingle(results));
+        res.send(results);
       }
     });
   });
@@ -20,7 +20,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('Database query error in GET to /cuisines');
       } else {
-        res.send(utils.filterSingle(results));
+        res.send(results);
       }
     });
   });
@@ -31,7 +31,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('Database query error in GET to /restrictions');
       } else {
-        res.send(utils.filterSingle(results));
+        res.send(results);
       }
     });
   });

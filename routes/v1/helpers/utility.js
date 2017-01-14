@@ -21,10 +21,6 @@ exports.isAChef = function (req, res, next) {
 // used to filter single element responses from the DB
 // from [ele1] to ele1, NOTE: empty arrays will return null
 exports.filterSingle = function(array) {
-  if (!Array.isArray(array) || !Array.isArray(JSON.parse(array))){
-    console.log('invalid input to filterSingle helper');
-    return null;
-  }
   if (array.length === 0) { 
     return null; 
   } else if (array.length === 1) { 

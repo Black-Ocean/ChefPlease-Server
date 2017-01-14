@@ -17,7 +17,7 @@ module.exports = function(app) {
     })
     .post(function(req, res, next) {
       let chefId = req.params.id;
-      let {name, text, image, price} = req.body
+      let {name, text, image, price} = req.body;
       let qString = 'INSERT INTO dishes (name, text, image, price, id_chefID) VALUES (?, ?, ?, ?, ?)'
       connection.query(qString, 
         [name, text, image, parseInt(price), chefId],
