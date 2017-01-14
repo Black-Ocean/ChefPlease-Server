@@ -12,7 +12,7 @@ module.exports = function(app) {
         if (err) {
           res.sendStatus(404).send('Database query error during GET to /events');
         } else {
-          res.send(utils.filterSingle(results));
+          res.send(results);
         }
       });
     })
@@ -63,7 +63,7 @@ module.exports = function(app) {
         if (err) {
           return res.status(500).send('Database query error during GET to /events/:id/users');
         }
-        res.send(utils.filterSingle(results));
+        res.send(results);
       })
     });
 
@@ -79,7 +79,7 @@ module.exports = function(app) {
         if (err) {
           return res.status(500).send('Database query error during GET to /events/users/:id');
         }
-        res.send(utils.filterSingle(results));
+        res.send(results);
       });
     });
 
@@ -95,7 +95,7 @@ module.exports = function(app) {
         if (err) {
           return res.status(500).send('Database query error during GET to /events/chefs/:id');
         }
-        res.send(utils.filterSingle(results));
+        res.send(results);
       });
     });
 }

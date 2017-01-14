@@ -10,7 +10,7 @@ module.exports = function(app) {
       if (err) {
           res.status(500).send('Database query error during GET to /users');
       } else {
-        res.send(utils.filterSingle(results));
+        res.send(results);
       }
     });
   });  
@@ -50,9 +50,8 @@ module.exports = function(app) {
         if (err) {
           res.status(500).send('Database query error during GET to /chefs');
         } else {          
-          res.send(utils.filterSingle(helpers.removeDuplicates(chefResults)));
+          res.send(helpers.removeDuplicates(chefResults));
         }
-        // filter out duplicate chefs
       }
     );
   }); 
