@@ -14,13 +14,14 @@ const api = supertest('http://localhost:3000');
 
 describe ('server', function() {
   describe('auth', function() {
-    describe('/signup routes', function(){
+    describe('/signup routes', function() {
       it('should post to users on /signup', function(done) {
         // setup new user { name, bio, email, password }
-        var newUser = { name: 'Anton', 
-                        bio: 'I like golf', 
-                        email: 'anton@gmail.com', 
-                        password: 'anton' };
+        var newUser = { 
+          name: 'Anton', 
+          bio: 'I like golf', 
+          email: 'anton@gmail.com', 
+          password: 'anton' };
 
         // setup request body
         request
@@ -36,7 +37,7 @@ describe ('server', function() {
               console.log(res);
               // expect(res.body.should.have.property)
             }
-          })
+          });
       });
 
       xit('should respond with a userID representing the new user', function(done) {
@@ -51,29 +52,29 @@ describe ('server', function() {
       request
         .get('/users')
         .expect(200, done);
-    })
+    });
 
     xit('should update a user with specified userID', function(done) {
-      request.put('/users/:id')
-    })
+      request.put('/users/:id');
+    });
   });
 
   xdescribe('chef routes', function() {
     it('should post a chef with location, cuisine and restrictions', function(done) {
 
-    })
+    });
 
     it('should get a chef with specified location, cuisine and restrictions', function(done) {
 
-    })
+    });
 
     it('should get a chef with specified userID', function(done) {
 
-    })
+    });
 
     it('should update a chef with specified chefID', function(done) {
 
-    })
+    });
   });
 
   xdescribe('dish routes', function() {
