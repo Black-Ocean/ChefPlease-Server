@@ -10,7 +10,7 @@ module.exports = function(app) {
     let qString = 'SELECT * FROM users';
     connection.query(qString, function(err, results) {
       if (err) {
-          res.status(500).send('Database query error during GET to /users');
+        res.status(500).send('Database query error during GET to /users');
       } else {
         res.send(results);
       }
@@ -41,7 +41,7 @@ module.exports = function(app) {
           res.send('User was updated!');
         }
       }
-    )
+    );
   });
 
   app.get('/chefs', function(req, res, next) {
@@ -60,7 +60,7 @@ module.exports = function(app) {
 
   app.get('/chefs/userId/:userId', function (req, res, next) {
     let userId = req.params.userId;
-    let qString = `SELECT * FROM CHEFS where id_userID=?`;
+    let qString = 'SELECT * FROM CHEFS where id_userID=?';
     connection.query(qString, [userId], function (err, results) {
       if (err) {
         res.status(500).send('User not found');
@@ -92,14 +92,14 @@ module.exports = function(app) {
             connection.query(`SELECT id FROM locations WHERE city = "${chef.locations}"`, 
             function(err, results) {
               if (err) {
-                return res.status(500).send(`Database query error for chef's location`);
+                return res.status(500).send('Database query error for chefs location');
               } else if (results.length === 0) {
                 // Provided location is not contained in DB, insert the location into location table
                 connection.query(`INSERT INTO locations (city) 
                                   VALUES ${helpers.formatSearch(chef.locations)}`, 
                 function(err, results) {
                   if (err) {
-                    return res.status(500).send(`Database query error in insert to chefs_locations`);
+                    return res.status(500).send('Database query error in insert to chefs_locations');
                   }
                   connection.query(`INSERT INTO chefs_locations (id_chefID, id_locationID)
                                     VALUES (?, ?)`, [chefID, results.insertId]);
@@ -141,7 +141,7 @@ module.exports = function(app) {
         if (err) {
           res.status(404).send('Database query error for PUT to /chefs');
         } else {
-          connection.query(`DELETE FROM chefs_locations WHERE id_chefID = ?`, [chefID], 
+          connection.query('DELETE FROM chefs_locations WHERE id_chefID = ?', [chefID], 
             function(err, results) {
               if (err) {
                 return res.sendStatus(500); 
@@ -151,7 +151,7 @@ module.exports = function(app) {
             }
           );
 
-          connection.query(`DELETE FROM chefs_cuisines WHERE id_chefID = ?`, [chefID], 
+          connection.query('DELETE FROM chefs_cuisines WHERE id_chefID = ?', [chefID], 
             function(err, results) {
               if (err) {
                 return res.sendStatus(500); 
@@ -161,7 +161,7 @@ module.exports = function(app) {
             }
           );
           
-          connection.query(`DELETE FROM chefs_restrictions WHERE id_chefID = ?`, [chefID], 
+          connection.query('DELETE FROM chefs_restrictions WHERE id_chefID = ?', [chefID], 
             function(err, results) {
               if (err) {
                 return res.sendStatus(500); 
@@ -176,4 +176,4 @@ module.exports = function(app) {
       }
     );
   });
-}
+};

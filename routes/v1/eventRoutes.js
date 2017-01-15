@@ -64,7 +64,7 @@ module.exports = function(app) {
           return res.status(500).send('Database query error during GET to /events/:id/users');
         }
         res.send(results);
-      })
+      });
     });
 
   app.route('/events/users/:id')
@@ -98,4 +98,4 @@ module.exports = function(app) {
         res.send(results);
       });
     });
-}
+};

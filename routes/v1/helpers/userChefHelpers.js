@@ -7,13 +7,13 @@ const connection = require('../../../db/index.js');
 var formatSearch = function(input) {
   let formatString = function(s) {
     return `("${s}")`;
-  }
+  };
 
   let formatArray = function(array) {
     let result = '';
     if (array.length === 1) {
       result = result.concat('"', array[0], '"');
-    } else if (array.length > 1){
+    } else if (array.length > 1) {
       for (let i = 0; i < array.length; i++) {
         result = result.concat('"', array[i], '"', ',');
         // remove trailing comma
@@ -23,8 +23,8 @@ var formatSearch = function(input) {
       }
     }
     return `(${result})`;
-  }
-  var result = (Array.isArray(input) ? formatArray(input): formatString(input));
+  };
+  var result = (Array.isArray(input) ? formatArray(input) : formatString(input));
   return result;
 };
 
@@ -55,7 +55,7 @@ var chefSearchQuery = function(queryObj) {
             ON (cl.id_locationID = l.id)
         WHERE c.cuisine = ? AND 
           l.city = ?`;
-  } else if (restrictions){
+  } else if (restrictions) {
     result = `
       SELECT
         chef.id,
@@ -109,14 +109,14 @@ var insertChefLocations = function(locations, chefID) {
   connection.query(`SELECT id FROM locations WHERE city = "${locations}"`, 
   function(err, results) {
     if (err) {
-      return res.status(500).send(`Database query error for chef's location`);
+      return res.status(500).send('Database query error for chef location');
     } else if (results.length === 0) {
       // Provided location is not contained in DB, insert the location into location table
       connection.query(`INSERT INTO locations (city) 
                         VALUES ${formatSearch(locations)}`, 
       function(err, results) {
         if (err) {
-          return res.status(500).send(`Database query error in insert to chefs_locations`);
+          return res.status(500).send('Database query error in insert to chefs_locations');
         }
         connection.query(`INSERT INTO chefs_locations (id_chefID, id_locationID)
                           VALUES (?, ?)`, [chefID, results.insertId]);
@@ -144,8 +144,8 @@ var insertChefRestrictions = function(restrictions, chefID) {
 };
 
 module.exports = {
-  formatSearch : formatSearch,
-  chefSearchQuery : chefSearchQuery,
+  formatSearch: formatSearch,
+  chefSearchQuery: chefSearchQuery,
   removeDuplicates: removeDuplicates,
   insertChefLocations: insertChefLocations,
   insertChefCuisines: insertChefCuisines,
