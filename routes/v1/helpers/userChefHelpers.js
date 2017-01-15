@@ -7,13 +7,13 @@ const connection = require('../../../db/index.js');
 var formatSearch = function(input) {
   let formatString = function(s) {
     return `("${s}")`;
-  }
+  };
 
   let formatArray = function(array) {
     let result = '';
     if (array.length === 1) {
       result = result.concat('"', array[0], '"');
-    } else if (array.length > 1){
+    } else if (array.length > 1) {
       for (let i = 0; i < array.length; i++) {
         result = result.concat('"', array[i], '"', ',');
         // remove trailing comma
@@ -23,8 +23,8 @@ var formatSearch = function(input) {
       }
     }
     return `(${result})`;
-  }
-  var result = (Array.isArray(input) ? formatArray(input): formatString(input));
+  };
+  var result = (Array.isArray(input) ? formatArray(input) : formatString(input));
   return result;
 };
 
@@ -55,7 +55,7 @@ var chefSearchQuery = function(queryObj) {
             ON (cl.id_locationID = l.id)
         WHERE c.cuisine = ? AND 
           l.city = ?`;
-  } else if (restrictions){
+  } else if (restrictions) {
     result = `
       SELECT
         chef.id,
@@ -144,8 +144,8 @@ var insertChefRestrictions = function(restrictions, chefID) {
 };
 
 module.exports = {
-  formatSearch : formatSearch,
-  chefSearchQuery : chefSearchQuery,
+  formatSearch: formatSearch,
+  chefSearchQuery: chefSearchQuery,
   removeDuplicates: removeDuplicates,
   insertChefLocations: insertChefLocations,
   insertChefCuisines: insertChefCuisines,
