@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var should = require('chai').should;
 var Promise = require('bluebird');
 var request = Promise.promisify(require('request'));
-var util = require('../helpers/Auth')
+var util = require('../helpers/Auth');
 
 const connection = require('../../../db/index');
 
@@ -35,7 +35,7 @@ describe('', function() {
         expect(body).to.equal('Email input is not valid');
         done();
       });
-    })
+    });
     it('Signup creates a user record and sends back a token', function(done) {
       var options = {
         'method': 'POST',
@@ -65,7 +65,7 @@ describe('', function() {
 
       request(options, function(error, res, body) {
 
-        expect(res.body).to.equal('A user with that email already exists!')
+        expect(res.body).to.equal('A user with that email already exists!');
         done();
       });
     });
@@ -102,7 +102,7 @@ describe('', function() {
         expect(body).to.equal('Invalid email or password');    
         done();    
       });    
-    })   
+    });   
  
     it(' Should send back the chef ID if the user is a chef', function(done) {   
       var options = {    
@@ -133,8 +133,8 @@ describe('', function() {
         }
       };
       request(options, function(error, res, body) {
-       expect(res.body).to.equal('User Token has been deleted');
-       done();
+        expect(res.body).to.equal('User Token has been deleted');
+        done();
       });
     }); 
   }); 
@@ -190,8 +190,7 @@ describe('', function() {
         expect(JSON.parse(res.body)).to.not.be.empty;
         done();
       });
-
-    })
+    });
   });
 
 
@@ -211,8 +210,7 @@ describe('', function() {
         expect(res.body).to.equal('Chef was updated!');
         done();
       });
-
-    })
+    });
 
     it ('get dishes for a particular chef ', function (done) {
       var options = {
@@ -223,8 +221,7 @@ describe('', function() {
         expect(JSON.parse(res.body)).to.not.be.empty;
         done();
       });
-
-    })
+    });
   });
   //CREATING EVENTS
 
@@ -247,28 +244,28 @@ describe('', function() {
         }
       };
       request(options, function (err, res, body) {
-        expect(body).to.be.an('object')
+        expect(body).to.be.an('object');
         done();
-      })
+      });
     });
 
     xit('are created by the user, the response will be the eventId', function (done) {
       var options = {
         'method': 'POST',
         'uri': localServer + '/events/',
-          'json': {
-            "name": "NPM TalkING",
-            "time": "1000-01-01 00:00:00",
-            "location": "San Francisco",
-            "text": "Really fun stuff",
-            "userId": "2",
-            "chefId": "18",
-            "quantity": "3"
-          }
+        'json': {
+          'name': 'NPM TalkING',
+          'time': '1000-01-01 00:00:00',
+          'location': 'San Francisco',
+          'text': 'Really fun stuff',
+          'userId': '2',
+          'chefId': '18',
+          'quantity': '3'
+        }
       };  
       request(options, function (err, res, body) {
         expect(body).to.be.a('number');
-        done()
+        done();
       });      
     });
 
@@ -280,34 +277,34 @@ describe('', function() {
       request(options, function (err, res, body) {
         expect(body).to.not.be.empty;       
         done();
-      })
+      });
     });
 
     //Delete events so that there aren't foreign key constraints
     afterEach(function (done) {
       connection.query('DELETE FROM events WHERE name=${NPM TalkING}', function (err, results) {        
         done();
-      })
-    })
-  })
+      });
+    });
+  });
 
   describe('Dishes for a chef:', function () {
-      it('POST should write to the DB and return the dishId ', function (done) {
-        var options = {
-          'method': 'POST',
-          'uri': localServer + '/dishes/chefs/1',
-          'json': {
-            "name" : "steak",
-            "text" : "medium-rare",
-            "image": "image-url",
-            "price": "10"
-          }
-        };
-        request(options, function (err, res, body) {
-          expect(body).to.be.a('number');        
-          done();
-        })      
-      });
+    it ('POST should write to the DB and return the dishId ', function (done) {
+      var options = {
+        'method': 'POST',
+        'uri': localServer + '/dishes/chefs/1',
+        'json': {
+          'name': 'steak',
+          'text': 'medium-rare',
+          'image': 'image-url',
+          'price': '10'
+        }
+      };
+      request(options, function (err, res, body) {
+        expect(body).to.be.a('number');        
+        done();
+      });      
+    });
 
     it('GET should return all dishes for a chef ', function (done) {
       var options = {
@@ -317,7 +314,7 @@ describe('', function() {
       request(options, function (err, res, body) {
         expect(body).to.not.be.empty;        
         done();
-      })      
+      });      
     });
 
   });  
@@ -332,18 +329,18 @@ describe('', function() {
         'method': 'POST',
         'uri': localServer + '/chefs/',
         'json': {
-          "name": "zackTheChef",
-          "bio": "I love to cook, game and code",
-          "userID":"1",
-          "locations": "San Francisco, CA, USA",
-          "cuisines":"Italian",
-          "restrictions":"Peanuts"
+          'name': 'zackTheChef',
+          'bio': 'I love to cook, game and code',
+          'userID': '1',
+          'locations': 'San Francisco, CA, USA',
+          'cuisines': 'Italian',
+          'restrictions': 'Peanuts'
         }
       };
       request(options, function (err, res, body) {        
         done();
-      })
-    }) 
+      });
+    }); 
     it('should return an empty array if no chefs meet the criteria', function (done) {
       var options = {
         'method': 'GET',
@@ -352,7 +349,7 @@ describe('', function() {
       request(options, function (err, res, body) {
         expect(JSON.parse(res.body)).to.be.empty;
         done();
-      })      
+      });      
     });
 
     it('should return an array of chefs if restrictions met', function (done) {
@@ -363,7 +360,7 @@ describe('', function() {
       request(options, function (err, res, body) {
         expect(body).to.not.be.empty;
         done();
-      })      
+      });      
     });
   });
 

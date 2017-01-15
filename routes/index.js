@@ -1,9 +1,9 @@
 var fs = require('fs');
 
-module.exports = function(app){
+module.exports = function(app) {
   // read all directories in the current folder
   fs.readdirSync(__dirname).forEach(function(folderName) {
-    if (folderName === "index.js") { 
+    if (folderName === 'index.js') { 
       return; 
     } else {
       // check that folderName is a valid version folder
