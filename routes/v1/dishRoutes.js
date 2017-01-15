@@ -9,7 +9,7 @@ module.exports = function(app) {
       let qString = 'SELECT * FROM dishes WHERE id_chefID = ?';
       connection.query(qString, [chefId], function(err, results) {
         if (err) {
-          next(err)
+          next(err);
         } else {
           res.send(results);
         }
@@ -18,7 +18,7 @@ module.exports = function(app) {
     .post(function(req, res, next) {
       let chefId = req.params.id;
       let {name, text, image, price} = req.body;
-      let qString = 'INSERT INTO dishes (name, text, image, price, id_chefID) VALUES (?, ?, ?, ?, ?)'
+      let qString = 'INSERT INTO dishes (name, text, image, price, id_chefID) VALUES (?, ?, ?, ?, ?)';
       connection.query(qString, 
         [name, text, image, parseInt(price), chefId],
         function(err, results) {
@@ -65,4 +65,4 @@ module.exports = function(app) {
         }
       );
     });
-}
+};

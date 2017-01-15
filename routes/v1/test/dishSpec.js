@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var should = require('chai').should;
 var Promise = require('bluebird');
 var request = Promise.promisify(require('request'));
-var util = require('../helpers/Auth')
+var util = require('../helpers/Auth');
 var helpers = require('./testHelpers.js');
 
 // const connection = require('../../../db/index');
@@ -21,11 +21,11 @@ before(function(done) {
     .then(function(newChefId) {
       chefId = newChefId;
       done();
-    })
+    });
   })
   .catch(function(err) {
     console.log('ERROR in test setup!');
-  })
+  });
 });
 
 describe('', function() {
@@ -60,17 +60,17 @@ describe('', function() {
           dishId = dish.id;
           expect(dish.id_chefID).to.equal(newDish.id_chefID);
           done();
-        })
+        });
       })
       .catch(function(err) {
         console.log('Test failed');
-        throw(err);
-      })
+        throw (err);
+      });
     });
 
     xit('Invalid Input tests', function(done) {
       done();
-    })
+    });
   });
 
   describe('Dish update: PUT to /dishes/:dishId', function() {
@@ -80,7 +80,7 @@ describe('', function() {
         text: 'update text test',
         image: 'update img test',
         price: 30
-      }
+      };
 
       var options = {
         'method': 'PUT',
@@ -92,7 +92,7 @@ describe('', function() {
         options = {
           'method': 'GET',
           'uri': dbURL + `/dishes/chefs/${chefId}`,
-        }
+        };
         request(options)
         .then(function(response) {
           dish = JSON.parse(response.body)[0];
@@ -103,8 +103,8 @@ describe('', function() {
           expect(dish.price).to.equal(updateDish.price);
 
           done();
-        })
-      })
+        });
+      });
     });
   });
 
@@ -122,14 +122,14 @@ describe('', function() {
         options = {
           'method': 'GET',
           'uri': dbURL + `/dishes/chefs/${chefId}`,
-        }
+        };
         request(options)
         .then(function(response) {
           expect(JSON.parse(response.body).length).to.equal(0);
           expect(Array.isArray(JSON.parse(response.body))).to.equal(true);
           done();
-        })
-      })
-    })
+        });
+      });
+    });
   });
 });
