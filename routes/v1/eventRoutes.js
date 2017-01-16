@@ -76,18 +76,21 @@ module.exports = function(app) {
       // if chefId is provided in query string, retrieve chef events corresponding to chefId
       if (chefId) {
         qString = `SELECT 
-                    e.id, e.name, e.time, e.location, e.text
+                    e.id, e.name, e.time, e.location, e.text, chef.name AS chefName
                   FROM events AS e 
                     INNER JOIN users_events AS ue ON (e.id = ue.id_events) 
-                    INNER JOIN chefs_events AS ce ON (e.id = ce.id_events) 
-                  WHERE (ue.id_users = ?) OR (ce.id_chefID = ?) ORDER BY time DESC`;
+                    INNER JOIN chefs_events AS ce ON (e.id = ce.id_events)
+                    INNER JOIN chefs AS chef ON (ce.id_chefID = chef.id)
+                  WHERE (ue.id_users = ?) OR (ce.id_chefID = ?) ORDER BY time ASC`;
         qArgs = [userId, chefId];
       } else {
         qString = `SELECT 
-                    e.id, e.name, e.time, e.location, e.text
+                    e.id, e.name, e.time, e.location, e.text, chef.name AS chefName
                   FROM events AS e 
                     INNER JOIN users_events AS ue ON (e.id = ue.id_events)
-                  WHERE (ue.id_users = ?) ORDER BY time DESC`;
+                    INNER JOIN chefs_events AS ce ON (e.id = ce.id_events)
+                    INNER JOIN chefs AS chef ON (ce.id_chefID = chef.id)
+                  WHERE (ue.id_users = ?) ORDER BY time ASC`;
         qArgs = [userId];
       }
 
