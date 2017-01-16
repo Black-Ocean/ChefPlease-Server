@@ -19,7 +19,7 @@ module.exports = function(app) {
     .post(function(req, res, next) {
       var eventDetails = {
         name: req.body.name,
-        // time: req.body.time,
+        time: req.body.time,
         location: req.body.location,
         text: req.body.text
       };
@@ -64,22 +64,38 @@ module.exports = function(app) {
           return res.status(500).send('Database query error during GET to /events/:id/users');
         }
         res.send(results);
-      });
+      })
     });
 
   app.route('/events/users/:id')
     // get all events for a user
     .get(function(req, res, next) {
       let userId = req.params.id;
-      let qString = 'SELECT * FROM events AS e \
-                      INNER JOIN users_events AS ue \
-                      ON (e.id = ue.id_events) \
-                    WHERE ue.id_users = ?';
-      connection.query(qString, [userId], function(err, results) {
+      let chefId = req.query.chefId;
+      let qString, qArgs;
+      // if chefId is provided in query string, retrieve chef events corresponding to chefId
+      if (chefId) {
+        qString = `SELECT 
+                    e.id, e.name, e.time, e.location, e.text
+                  FROM events AS e 
+                    INNER JOIN users_events AS ue ON (e.id = ue.id_events) 
+                    INNER JOIN chefs_events AS ce ON (e.id = ce.id_events) 
+                  WHERE (ue.id_users = ?) OR (ce.id_chefID = ?) ORDER BY time DESC`;
+        qArgs = [userId, chefId];
+      } else {
+        qString = `SELECT 
+                    e.id, e.name, e.time, e.location, e.text
+                  FROM events AS e 
+                    INNER JOIN users_events AS ue ON (e.id = ue.id_events)
+                  WHERE (ue.id_users = ?) ORDER BY time DESC`;
+        qArgs = [userId];
+      }
+
+      connection.query(qString, qArgs, function(err, results) {
         if (err) {
           return res.status(500).send('Database query error during GET to /events/users/:id');
         }
-        res.send(results);
+        res.send(utils.removeDuplicates(results));
       });
     });
 
@@ -98,4 +114,20 @@ module.exports = function(app) {
         res.send(results);
       });
     });
-};
+
+  app.route('/events/:id/dishes')
+    .get(function(req, res, next) {
+      let eventId = req.params.id;
+      let qString = `SELECT 
+                      dish.id, dish.name, dish.text, dish.image, dish.price, ed.quantities
+                    FROM dishes AS dish
+                    INNER JOIN events_dishes AS ed ON (ed.id_dishID = dish.id)
+                    WHERE (ed.id_eventID = ?)`;
+      connection.query(qString, [eventId], function(err, results) {
+        if (err) {
+          return res.status(500).send('Database query error during GET to /events/:id/dishes');
+        }
+        res.send(results);
+      });
+    });
+}
