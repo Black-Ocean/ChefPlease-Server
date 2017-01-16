@@ -52,7 +52,7 @@ module.exports = function(app) {
         if (err) {
           res.status(500).send('Database query error during GET to /chefs');
         } else {          
-          res.send(helpers.removeDuplicates(chefResults));
+          res.send(utils.removeDuplicates(chefResults));
         }
       }
     );
@@ -60,7 +60,16 @@ module.exports = function(app) {
 
   app.get('/chefs/userId/:userId', function (req, res, next) {
     let userId = req.params.userId;
-    let qString = 'SELECT * FROM CHEFS where id_userID=?';
+    let qString = `SELECT
+                    chef.id,
+                    chef.name,
+                    chef.bio,
+                    chef.avgRating,
+                    chef.id_userID,
+                    user.md5
+                  FROM chefs AS chef
+                  INNER JOIN users AS user
+                  ON (chef.id_userID = user.id) WHERE id_userID=?`;
     connection.query(qString, [userId], function (err, results) {
       if (err) {
         res.status(500).send('User not found');
