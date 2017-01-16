@@ -86,25 +86,6 @@ var chefSearchQuery = function(queryObj) {
   return result;
 };
 
-// removeDuplicates:
-// given a response from a sql database query (array of table rows), 
-// remove entries with identical id's and return the filtered array
-var removeDuplicates = function(response) {
-  var responseHash = {};
-  for (let i = 0; i < response.length; i++) {
-    let resEle = response[i];
-    // id is already in the hash
-    if (!responseHash[resEle.id]) {
-      responseHash[resEle.id] = resEle;
-    }
-  }
-
-  // return an array of values in the responseHash
-  return Object.keys(responseHash).map((key) => {
-    return responseHash[key];
-  });
-};
-
 var insertChefLocations = function(locations, chefID) {
   connection.query(`SELECT id FROM locations WHERE city = "${locations}"`, 
   function(err, results) {
@@ -146,7 +127,6 @@ var insertChefRestrictions = function(restrictions, chefID) {
 module.exports = {
   formatSearch: formatSearch,
   chefSearchQuery: chefSearchQuery,
-  removeDuplicates: removeDuplicates,
   insertChefLocations: insertChefLocations,
   insertChefCuisines: insertChefCuisines,
   insertChefRestrictions: insertChefRestrictions

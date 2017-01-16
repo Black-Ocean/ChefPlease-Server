@@ -15,6 +15,7 @@ const createSession = function (req, res, newUser) {
   let userId = newUser.id;
   req.session = {
     id: newUser.id,
+    md5: newUser.md5,
     AuthToken: token
   };
   connection.query(

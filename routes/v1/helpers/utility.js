@@ -49,3 +49,22 @@ exports.isLoggedIn = function (req, res, next) {
     }
   });
 };
+
+// removeDuplicates:
+// given a response from a sql database query (array of table rows), 
+// remove entries with identical id's and return the filtered array
+exports.removeDuplicates = function(response) {
+  var responseHash = {};
+  for (let i = 0; i < response.length; i++) {
+    let resEle = response[i];
+    // id is already in the hash
+    if (!responseHash[resEle.id]) {
+      responseHash[resEle.id] = resEle;
+    }
+  }
+
+  // return an array of values in the responseHash
+  return Object.keys(responseHash).map((key) => {
+    return responseHash[key];
+  });
+};
