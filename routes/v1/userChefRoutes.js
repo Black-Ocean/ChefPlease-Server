@@ -74,8 +74,37 @@ module.exports = function(app) {
     connection.query(qString, [userId], function (err, results) {
       if (err) {
         res.status(500).send('User not found');
+      } else if (results.length === 0) { 
+          return res.send(results); 
       } else {
-        res.send(utils.filterSingle(results));
+        // return chef's locations, restrictions and cuisines
+        let chef = utils.filterSingle(results);
+        // get the chef's locations
+        connection.query(`SELECT l.city FROM locations AS l
+                          INNER JOIN chefs_locations AS cl
+                            ON (cl.id_locationID = l.id)
+                          WHERE (cl.id_chefID = ?)`, [chef.id], function(err, results) {
+          if (!helpers.errorCheck(err)) {
+            chef.locations = results.map((obj, i) => (obj['city'])); 
+            connection.query(`SELECT c.cuisine FROM cuisines AS c
+                              INNER JOIN chefs_cuisines AS cc
+                                ON (cc.id_cuisineID = c.id)
+                              WHERE (cc.id_chefID = ?)`, [chef.id], function(err, results) {
+              if (!helpers.errorCheck(err)) {
+                chef.cuisines = results.map((obj, i) => (obj['cuisine']));
+                connection.query(`SELECT r.restriction FROM restrictions AS r
+                                  INNER JOIN chefs_restrictions AS cr
+                                    ON (cr.id_restrictionID = r.id)
+                                  WHERE (cr.id_chefID = ?)`, [chef.id], function(err, results) {
+                  if (!helpers.errorCheck(err)) {
+                    chef.restrictions = results.map((obj, i) => (obj['restriction']));
+                    res.send(chef);
+                  }
+                });
+              }
+            });
+          }
+        });
       }
     });
   });

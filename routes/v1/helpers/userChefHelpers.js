@@ -126,10 +126,19 @@ var insertChefRestrictions = function(restrictions, chefID) {
     [chefID]);
 };
 
+var errorCheck = function(err, res) {
+  if (err) {
+    res.status(500).send('Database query error during GET to /chefs/userId/:userId');
+  } else { 
+    return false;
+  }
+}
+
 module.exports = {
   formatSearch: formatSearch,
   chefSearchQuery: chefSearchQuery,
   insertChefLocations: insertChefLocations,
   insertChefCuisines: insertChefCuisines,
-  insertChefRestrictions: insertChefRestrictions
+  insertChefRestrictions: insertChefRestrictions,
+  errorCheck: errorCheck
 };
