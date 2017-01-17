@@ -64,6 +64,7 @@ module.exports = function(app) {
                     chef.id,
                     chef.name,
                     chef.bio,
+                    chef.image,
                     chef.avgRating,
                     chef.id_userID,
                     user.md5
@@ -73,17 +74,47 @@ module.exports = function(app) {
     connection.query(qString, [userId], function (err, results) {
       if (err) {
         res.status(500).send('User not found');
+      } else if (results.length === 0) { 
+          return res.send(results); 
       } else {
-        res.send(utils.filterSingle(results));
+        // return chef's locations, restrictions and cuisines
+        let chef = utils.filterSingle(results);
+        let errorMsg = 'Database query error during GET to /chefs/userId/:userId';
+        // get the chef's locations
+        connection.query(`SELECT l.city FROM locations AS l
+                          INNER JOIN chefs_locations AS cl
+                            ON (cl.id_locationID = l.id)
+                          WHERE (cl.id_chefID = ?)`, [chef.id], function(err, results) {
+          if (!helpers.errorCheck(err, res, errorMsg)) {
+            chef.locations = results.map((obj, i) => (obj['city'])); 
+            connection.query(`SELECT c.cuisine FROM cuisines AS c
+                              INNER JOIN chefs_cuisines AS cc
+                                ON (cc.id_cuisineID = c.id)
+                              WHERE (cc.id_chefID = ?)`, [chef.id], function(err, results) {
+              if (!helpers.errorCheck(err, res, errorMsg)) {
+                chef.cuisines = results.map((obj, i) => (obj['cuisine']));
+                connection.query(`SELECT r.restriction FROM restrictions AS r
+                                  INNER JOIN chefs_restrictions AS cr
+                                    ON (cr.id_restrictionID = r.id)
+                                  WHERE (cr.id_chefID = ?)`, [chef.id], function(err, results) {
+                  if (!helpers.errorCheck(err, res, errorMsg)) {
+                    chef.restrictions = results.map((obj, i) => (obj['restriction']));
+                    res.send(chef);
+                  }
+                });
+              }
+            });
+          }
+        });
       }
     });
   });
 
   app.post('/chefs', function(req, res, next) {
     let chef = req.body;
-    let qString = 'INSERT INTO chefs (name, bio, id_userID) \
-                    VALUES (?, ?, ?)';
-    connection.query(qString, [chef.name, chef.bio, chef.userID],
+    let qString = 'INSERT INTO chefs (name, bio, image, id_userID) \
+                    VALUES (?, ?, ?, ?)';
+    connection.query(qString, [chef.name, chef.bio, chef.image, chef.userID],
       function(err, results) {
         if (err) {
           res.status(500).send('Database query error for POST to /chefs');
@@ -142,10 +173,9 @@ module.exports = function(app) {
 
   app.put('/chefs/:id', function(req, res, next) {
     let chefID = req.params.id;
-    let {name, bio, locations, cuisines, restrictions} = req.body;
-
-    let qString = 'UPDATE chefs SET name = ?, bio = ? WHERE id = ?';
-    connection.query(qString, [name, bio, chefID],
+    let {name, bio, image, locations, cuisines, restrictions} = req.body;
+    let qString = 'UPDATE chefs SET name = ?, bio = ?, image = ? WHERE id = ?';
+    connection.query(qString, [name, bio, image, chefID],
       function(err, results) {
         if (err) {
           res.status(404).send('Database query error for PUT to /chefs');
@@ -155,7 +185,7 @@ module.exports = function(app) {
               if (err) {
                 return res.sendStatus(500); 
               } else { 
-                helpers.insertChefLocations(locations, chefID); 
+                helpers.insertChefLocations(locations, chefID, res); 
               }
             }
           );
@@ -165,7 +195,7 @@ module.exports = function(app) {
               if (err) {
                 return res.sendStatus(500); 
               } else { 
-                helpers.insertChefCuisines(cuisines, chefID);
+                helpers.insertChefCuisines(cuisines, chefID, res);
               }
             }
           );
@@ -175,7 +205,7 @@ module.exports = function(app) {
               if (err) {
                 return res.sendStatus(500); 
               } else { 
-                helpers.insertChefRestrictions(restrictions, chefID);
+                helpers.insertChefRestrictions(restrictions, chefID, res);
               }
             }
           );
