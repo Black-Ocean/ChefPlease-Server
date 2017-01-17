@@ -39,6 +39,7 @@ var chefSearchQuery = function(queryObj) {
         chef.id,
         chef.name,
         chef.bio,
+        chef.image,
         chef.avgRating,
         chef.id_userID,
         user.md5
@@ -61,6 +62,7 @@ var chefSearchQuery = function(queryObj) {
         chef.id,
         chef.name,
         chef.bio,
+        chef.image,
         chef.avgRating,
         chef.id_userID,
         user.md5
