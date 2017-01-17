@@ -24,7 +24,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('Database query error during GET to /users/:id');
       } else {
-        res.send(utils.filterSingle(results));
+        res.send(results);
       }
     });
   });
@@ -64,6 +64,7 @@ module.exports = function(app) {
                     chef.id,
                     chef.name,
                     chef.bio,
+                    chef.image,
                     chef.avgRating,
                     chef.id_userID,
                     user.md5
@@ -74,16 +75,16 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('User not found');
       } else {
-        res.send(utils.filterSingle(results));
+        res.send(results);
       }
     });
   });
 
   app.post('/chefs', function(req, res, next) {
     let chef = req.body;
-    let qString = 'INSERT INTO chefs (name, bio, id_userID) \
-                    VALUES (?, ?, ?)';
-    connection.query(qString, [chef.name, chef.bio, chef.userID],
+    let qString = 'INSERT INTO chefs (name, bio, image, id_userID) \
+                    VALUES (?, ?, ?, ?)';
+    connection.query(qString, [chef.name, chef.bio, chef.image, chef.userID],
       function(err, results) {
         if (err) {
           res.status(500).send('Database query error for POST to /chefs');
@@ -142,10 +143,9 @@ module.exports = function(app) {
 
   app.put('/chefs/:id', function(req, res, next) {
     let chefID = req.params.id;
-    let {name, bio, locations, cuisines, restrictions} = req.body;
-
-    let qString = 'UPDATE chefs SET name = ?, bio = ? WHERE id = ?';
-    connection.query(qString, [name, bio, chefID],
+    let {name, bio, image, locations, cuisines, restrictions} = req.body;
+    let qString = 'UPDATE chefs SET name = ?, bio = ?, image = ? WHERE id = ?';
+    connection.query(qString, [name, bio, image, chefID],
       function(err, results) {
         if (err) {
           res.status(404).send('Database query error for PUT to /chefs');
