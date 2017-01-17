@@ -24,7 +24,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('Database query error during GET to /users/:id');
       } else {
-        res.send(results);
+        res.send(utils.filterSingle(results));
       }
     });
   });
@@ -75,7 +75,7 @@ module.exports = function(app) {
       if (err) {
         res.status(500).send('User not found');
       } else {
-        res.send(results);
+        res.send(utils.filterSingle(results));
       }
     });
   });
