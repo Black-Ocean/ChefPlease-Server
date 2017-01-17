@@ -31,7 +31,6 @@ const createSession = function (req, res, newUser) {
             res.status(500).send('Database error when looking for userId');
           } else {
             req.session.chefId = results[0] ? results[0].id : null;
-            console.log('chefid is: ', newUser.chefID);
             res.status(201).send(req.session);
           }
         });
