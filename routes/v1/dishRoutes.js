@@ -57,19 +57,17 @@ module.exports = function(app) {
                 return res.sendStatus(500); 
               } else { 
                 helpers.insertDishCuisines(cuisines, dishId);
+                connection.query('DELETE FROM dishes_restrictions WHERE id_dishID = ?', [dishId], 
+                function(err, results) {
+                  if (err) {
+                    return res.sendStatus(500); 
+                  } else { 
+                    helpers.insertDishRestrictions(restrictions, dishId);
+                    res.sendStatus(200);
+                  }
+                });
               }
-            }
-          );
-          connection.query('DELETE FROM dishes_restrictions WHERE id_dishID = ?', [dishId], 
-            function(err, results) {
-              if (err) {
-                return res.sendStatus(500); 
-              } else { 
-                helpers.insertDishRestrictions(restrictions, dishId);
-              }
-            }
-          );
-            res.sendStatus(200);
+            });
           }
         }
       );

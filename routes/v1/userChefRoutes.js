@@ -79,24 +79,25 @@ module.exports = function(app) {
       } else {
         // return chef's locations, restrictions and cuisines
         let chef = utils.filterSingle(results);
+        let errorMsg = 'Database query error during GET to /chefs/userId/:userId';
         // get the chef's locations
         connection.query(`SELECT l.city FROM locations AS l
                           INNER JOIN chefs_locations AS cl
                             ON (cl.id_locationID = l.id)
                           WHERE (cl.id_chefID = ?)`, [chef.id], function(err, results) {
-          if (!helpers.errorCheck(err)) {
+          if (!helpers.errorCheck(err, res, errorMsg)) {
             chef.locations = results.map((obj, i) => (obj['city'])); 
             connection.query(`SELECT c.cuisine FROM cuisines AS c
                               INNER JOIN chefs_cuisines AS cc
                                 ON (cc.id_cuisineID = c.id)
                               WHERE (cc.id_chefID = ?)`, [chef.id], function(err, results) {
-              if (!helpers.errorCheck(err)) {
+              if (!helpers.errorCheck(err, res, errorMsg)) {
                 chef.cuisines = results.map((obj, i) => (obj['cuisine']));
                 connection.query(`SELECT r.restriction FROM restrictions AS r
                                   INNER JOIN chefs_restrictions AS cr
                                     ON (cr.id_restrictionID = r.id)
                                   WHERE (cr.id_chefID = ?)`, [chef.id], function(err, results) {
-                  if (!helpers.errorCheck(err)) {
+                  if (!helpers.errorCheck(err, res, errorMsg)) {
                     chef.restrictions = results.map((obj, i) => (obj['restriction']));
                     res.send(chef);
                   }
@@ -184,7 +185,7 @@ module.exports = function(app) {
               if (err) {
                 return res.sendStatus(500); 
               } else { 
-                helpers.insertChefLocations(locations, chefID); 
+                helpers.insertChefLocations(locations, chefID, res); 
               }
             }
           );
@@ -194,7 +195,7 @@ module.exports = function(app) {
               if (err) {
                 return res.sendStatus(500); 
               } else { 
-                helpers.insertChefCuisines(cuisines, chefID);
+                helpers.insertChefCuisines(cuisines, chefID, res);
               }
             }
           );
@@ -204,7 +205,7 @@ module.exports = function(app) {
               if (err) {
                 return res.sendStatus(500); 
               } else { 
-                helpers.insertChefRestrictions(restrictions, chefID);
+                helpers.insertChefRestrictions(restrictions, chefID, res);
               }
             }
           );

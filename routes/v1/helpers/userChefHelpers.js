@@ -88,15 +88,14 @@ var chefSearchQuery = function(queryObj) {
   return result;
 };
 
-var insertChefLocations = function(locations, chefID) {
+var insertChefLocations = function(locations, chefID, res) {
   connection.query(`SELECT id FROM locations WHERE city = "${locations}"`, 
   function(err, results) {
     if (err) {
       return res.status(500).send('Database query error for chef location');
     } else if (results.length === 0) {
       // Provided location is not contained in DB, insert the location into location table
-      connection.query(`INSERT INTO locations (city) 
-                        VALUES ${formatSearch(locations)}`, 
+      connection.query(`INSERT INTO locations (city) VALUES ${formatSearch(locations)}`, 
       function(err, results) {
         if (err) {
           return res.status(500).send('Database query error in insert to chefs_locations');
@@ -116,19 +115,21 @@ var insertChefCuisines = function(cuisines, chefID) {
   connection.query(`INSERT INTO chefs_cuisines (id_chefID, id_cuisineID) \
     SELECT ?, id FROM cuisines \
     WHERE cuisine IN ${formatSearch(cuisines)}`,
-    [chefID]);
+    [chefID], 
+    (err, res) => (errorCheck(err, res, 'DB error in inserting chef cuisines')));
 };
 
 var insertChefRestrictions = function(restrictions, chefID) {
   connection.query(`INSERT INTO chefs_restrictions (id_chefID, id_restrictionID) \
     SELECT ?, id FROM restrictions \
     WHERE restriction IN ${formatSearch(restrictions)}`,
-    [chefID]);
+    [chefID], 
+    (err, res) => (errorCheck(err, res, 'DB error in inserting chef restrictions')));
 };
 
-var errorCheck = function(err, res) {
+var errorCheck = function(err, res, msg) {
   if (err) {
-    res.status(500).send('Database query error during GET to /chefs/userId/:userId');
+    return res.status(500).send(msg);
   } else { 
     return false;
   }
