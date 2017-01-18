@@ -117,14 +117,16 @@ module.exports = function(app) {
     connection.query(qString, [chef.name, chef.bio, chef.image, chef.userID],
       function(err, results) {
         if (err) {
-          res.status(500).send('Database query error for POST to /chefs');
+          console.log(err);
+          return res.status(500).send('Database query error for POST to /chefs');
         } else {
           // update users table
           let chefID = results.insertId;
           let qString = 'UPDATE users SET chefID = ? WHERE id = ?';
           connection.query(qString, [chefID, chef.userID], function(err, results) {
             if (err) {
-              res.sendStatus(404);
+              console.log(err);
+              return res.sendStatus(404);
             }
 
             // check provided user's location, add to /locations if not found
@@ -164,7 +166,7 @@ module.exports = function(app) {
                               [chefID]);
 
             // return id in chefs table for the new chef
-            res.send(chefID.toString());
+            return res.send(chefID.toString());
           });
         }
       }
