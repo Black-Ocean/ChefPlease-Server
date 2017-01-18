@@ -76,20 +76,22 @@ module.exports = function(app) {
       // if chefId is provided in query string, retrieve chef events corresponding to chefId
       if (chefId) {
         qString = `SELECT 
-                    e.id, e.name, e.time, e.location, e.text, chef.name AS chefName
+                    e.id, e.name, e.time, e.location, e.text, 
+                    c.id AS chefId, c.image AS chefImage, c.bio AS chefBio, cs.name AS chefName
                   FROM events AS e 
                     INNER JOIN users_events AS ue ON (e.id = ue.id_events) 
                     INNER JOIN chefs_events AS ce ON (e.id = ce.id_events)
-                    INNER JOIN chefs AS chef ON (ce.id_chefID = chef.id)
+                    INNER JOIN chefs AS c ON (ce.id_chefID = c.id)
                   WHERE (ue.id_users = ?) OR (ce.id_chefID = ?) ORDER BY time ASC`;
         qArgs = [userId, chefId];
       } else {
         qString = `SELECT 
-                    e.id, e.name, e.time, e.location, e.text, chef.name AS chefName
+                    e.id, e.name, e.time, e.location, e.text, 
+                    c.id AS chefId, c.image AS chefImage, c.bio AS chefBio, c.name AS chefName
                   FROM events AS e 
                     INNER JOIN users_events AS ue ON (e.id = ue.id_events)
                     INNER JOIN chefs_events AS ce ON (e.id = ce.id_events)
-                    INNER JOIN chefs AS chef ON (ce.id_chefID = chef.id)
+                    INNER JOIN chefs AS c ON (ce.id_chefID = c.id)
                   WHERE (ue.id_users = ?) ORDER BY time ASC`;
         qArgs = [userId];
       }
@@ -98,6 +100,13 @@ module.exports = function(app) {
         if (err) {
           return res.status(500).send('Database query error during GET to /events/users/:id');
         }
+        results = utils.removeDuplicates(results);
+        results = results.map((row, index) => {
+          let {id, name, time, location, text, 
+               chefId, chefBio, chefImage, chefName} = row;
+          return { id: id, name: name, time: time, location: location, text: text,
+                   chefInfo: {id: chefId, name: chefName, bio: chefBio, image: chefImage }};
+        });
         res.send(utils.removeDuplicates(results));
       });
     });
