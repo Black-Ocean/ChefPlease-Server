@@ -27,9 +27,12 @@ module.exports = function(app) {
             res.status(500).send('Database query error in POST to /dishes/chefs/:id');
           } else {
             let dishId = results.insertId;
-
-            helpers.insertDishCuisines(cuisines, dishId);
-            helpers.insertDishRestrictions(restrictions, dishId);
+            if (cuisines.length) {
+              helpers.insertDishCuisines(cuisines, dishId);
+            }
+            if (restrictions.length) {
+              helpers.insertDishRestrictions(restrictions, dishId);
+            }
 
             res.send(dishId.toString());
           }
