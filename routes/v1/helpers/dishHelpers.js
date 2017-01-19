@@ -18,4 +18,4 @@ var insertDishRestrictions = function(restrictions, dishID) {
 module.exports = {
   insertDishCuisines: insertDishCuisines,
   insertDishRestrictions: insertDishRestrictions
-}
+};
