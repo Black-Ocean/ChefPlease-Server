@@ -154,16 +154,10 @@ module.exports = function(app) {
             });
 
             // add chefs cuisines
-            connection.query(`INSERT INTO chefs_cuisines (id_chefID, id_cuisineID) \
-                              SELECT ?, id FROM cuisines \
-                              WHERE cuisine IN ${helpers.formatSearch(chef.cuisines)}`,
-                              [chefID]);
+            helpers.insertChefCuisines(chef.cuisines, chefID, res);
 
             // add chefs restrictions
-            connection.query(`INSERT INTO chefs_restrictions (id_chefID, id_restrictionID) \
-                              SELECT ?, id FROM restrictions \
-                              WHERE restriction IN ${helpers.formatSearch(chef.restrictions)}`,
-                              [chefID]);
+            helpers.insertChefRestrictions(chef.restrictions, chefID, res);
 
             // return id in chefs table for the new chef
             return res.send(chefID.toString());
