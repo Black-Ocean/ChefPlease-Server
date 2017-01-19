@@ -115,14 +115,25 @@ module.exports = function(app) {
     // get all events for a chef
     .get(function(req, res, next) {
       let chefId = req.params.id;
-      let qString = 'SELECT * FROM events AS e \
-                      INNER JOIN chefs_events AS ce \
-                      ON (e.id = ce.id_events) \
-                    WHERE ce.id_chefID = ?';
+      let qString = `SELECT 
+                      e.id, e.name, e.time, e.location, e.text, 
+                      u.id AS userId, u.md5 AS md5, u.bio AS userBio, u.name AS userName
+                    FROM events AS e 
+                      INNER JOIN users_events AS ue ON (e.id = ue.id_events)
+                      INNER JOIN chefs_events AS ce ON (e.id = ce.id_events)
+                      INNER JOIN users AS u ON (ue.id_users = u.id)
+                    WHERE (ce.id_chefID = ?) ORDER BY time ASC`;
       connection.query(qString, [chefId], function(err, results) {
         if (err) {
           return res.status(500).send('Database query error during GET to /events/chefs/:id');
         }
+        results = utils.removeDuplicates(results);
+        results = results.map((row, index) => {
+          let {id, name, time, location, text, 
+               userId, userBio, userName, md5} = row;
+          return { id: id, name: name, time: time, location: location, text: text,
+                   userInfo: {id: userId, name: userName, bio: userBio, md5: md5 }};
+        });
         res.send(results);
       });
     });
