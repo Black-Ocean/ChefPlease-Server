@@ -111,20 +111,24 @@ var insertChefLocations = function(locations, chefID, res) {
   });
 };
 
-var insertChefCuisines = function(cuisines, chefID) {
-  connection.query(`INSERT INTO chefs_cuisines (id_chefID, id_cuisineID) \
+var insertChefCuisines = function(cuisines, chefID, res) {
+  if (cuisines.length){
+    connection.query(`INSERT INTO chefs_cuisines (id_chefID, id_cuisineID) \
     SELECT ?, id FROM cuisines \
     WHERE cuisine IN ${formatSearch(cuisines)}`,
     [chefID], 
     (err, res) => (errorCheck(err, res, 'DB error in inserting chef cuisines')));
+  }
 };
 
-var insertChefRestrictions = function(restrictions, chefID) {
-  connection.query(`INSERT INTO chefs_restrictions (id_chefID, id_restrictionID) \
+var insertChefRestrictions = function(restrictions, chefID, res) {
+  if (restrictions.length) {
+    connection.query(`INSERT INTO chefs_restrictions (id_chefID, id_restrictionID) \
     SELECT ?, id FROM restrictions \
     WHERE restriction IN ${formatSearch(restrictions)}`,
     [chefID], 
     (err, res) => (errorCheck(err, res, 'DB error in inserting chef restrictions')));
+  }
 };
 
 var errorCheck = function(err, res, msg) {
