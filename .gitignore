@@ -1,3 +1,4 @@
 node_modules/
 routes/v1/removedRoutes
 routes/v1/test/test
+db/index.js
