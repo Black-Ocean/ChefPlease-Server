@@ -33,7 +33,6 @@ module.exports = function(app) {
             if (restrictions.length) {
               helpers.insertDishRestrictions(restrictions, dishId);
             }
-
             res.send(dishId.toString());
           }
         }
