@@ -1,10 +1,10 @@
 var mysql = require('mysql');
 
 var connection = mysql.createConnection({
-  host: 'ec2-35-167-186-19.us-west-2.compute.amazonaws.com',
-  user: 'anton',
-  password: 'anton',
-  database: 'black_ocean',
+  host: 'us-cdbr-iron-east-04.cleardb.net',
+  user     : 'b3c7dbd82fcf88',
+  password : '8c954b8d',
+  database : 'heroku_c78b041c5ef1bc2',
   flags: {
     reconnect: true,
   }
